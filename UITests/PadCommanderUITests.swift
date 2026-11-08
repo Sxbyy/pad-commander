@@ -43,6 +43,36 @@ final class PadCommanderUITests: XCTestCase {
         e.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)).withOffset(CGVector(dx: 16, dy: 0)).tap()
     }
 
+    /// Schickt jede Taste einmal und protokolliert, was die App empfaengt (ohne Aktion).
+    func testTastenZuordnung() {
+        app.terminate()
+        app.launchArguments = ["-uitest", "-keylog"]
+        app.launch()
+        wait("row-L-Bilder", 20)
+        sleep(1)
+        let keys: [(XCUIKeyboardKey, String)] = [
+            (.F1, "F1"), (.F2, "F2"), (.F3, "F3"), (.F4, "F4"), (.F5, "F5"), (.F6, "F6"), (.F7, "F7"),
+            (.F8, "F8"), (.F9, "F9"), (.F10, "F10"), (.tab, "Tab"), (.upArrow, "Up"), (.downArrow, "Down"),
+            (.leftArrow, "Left"), (.rightArrow, "Right"), (.escape, "Esc"), (.space, "Space"), (.return, "Enter")
+        ]
+        var before = el("lastkey").label
+        for (k, name) in keys {
+            app.typeKey(k, modifierFlags: [])
+            usleep(400_000)
+            let now = el("lastkey").label
+            print("ZUORDNUNG \(name) -> " + String(now.dropFirst(before.count)))
+            before = now
+        }
+        app.typeKey("u", modifierFlags: .control)
+        usleep(400_000)
+        print("ZUORDNUNG Ctrl+U -> " + String(el("lastkey").label.dropFirst(before.count)))
+        before = el("lastkey").label
+        app.typeKey(.F7, modifierFlags: .option)
+        usleep(400_000)
+        print("ZUORDNUNG Alt+F7 -> " + String(el("lastkey").label.dropFirst(before.count)))
+        shot("30-tastenzuordnung")
+    }
+
     func testRundgang() {
         wait("row-L-Bilder", 20)
         shot("01-start")
@@ -150,12 +180,12 @@ final class PadCommanderUITests: XCTestCase {
         shot("18-tastatur-f7")
         key(.escape, [], "Esc")
         XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
-        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
         key(.downArrow, [], "Down")
         key(.F5, [], "F5")
         shot("19-tastatur-f5")
         key(.escape, [], "Esc2")
-        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
         key(XCUIKeyboardKey(rawValue: "t"), .control, "Ctrl+T")
         shot("20-tastatur-ende")
     }

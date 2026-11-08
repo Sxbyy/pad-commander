@@ -187,6 +187,14 @@ final class EscTextField: UITextField {
     }
 
     @objc func escapePressed() { onEscape?() }
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        if presses.contains(where: { $0.key?.keyCode == .keyboardEscape }) {
+            onEscape?()
+            return
+        }
+        super.pressesBegan(presses, with: event)
+    }
 }
 
 struct FieldBox<Content: View>: View {

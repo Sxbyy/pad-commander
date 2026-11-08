@@ -124,6 +124,8 @@ final class AppModel {
     @ObservationIgnored private let defaults = UserDefaults.standard
     @ObservationIgnored private var toastTask: Task<Void, Never>?
     let isUITest = CommandLine.arguments.contains("-uitest")
+    /// Nur im Test: Tasten nur protokollieren, nichts ausfuehren.
+    let keyLogOnly = CommandLine.arguments.contains("-keylog")
 
     init() {
         left = PanelModel(side: .left, location: .iPad)

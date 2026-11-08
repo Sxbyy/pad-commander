@@ -9,6 +9,7 @@ extension AppModel {
     func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
         let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
         if isUITest { lastKey += Self.keyName(input, flags) + " " }
+        if keyLogOnly { return }
         if busy != nil {
             if input == UIKeyCommand.inputEscape { busy?.cancel?() }
             return
