@@ -1,0 +1,150 @@
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+    var identifier = "dialog-field"
+    var onSubmit: () -> Void
+
+    func makeUIView(context: Context) -> UITextField {
+        let tf = UITextField()
+--- NEW
+    var identifier = "dialog-field"
+    var onSubmit: () -> Void
+    var onCancel: (() -> Void)? = nil
+
+    func makeUIView(context: Context) -> UITextField {
+        let tf = EscTextField()
+        let coordinator = context.coordinator
+        tf.onEscape = { [weak coordinator] in coordinator?.parent.onCancel?() }
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+struct FieldBox<Content: View>: View {
+--- NEW
+/// Textfeld, das Esc selbst behandelt (sonst schluckt UIKit die Taste).
+final class EscTextField: UITextField {
+    var onEscape: (() -> Void)?
+
+    override var keyCommands: [UIKeyCommand]? {
+        let esc = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(escapePressed))
+        esc.wantsPriorityOverSystemBehavior = true
+        return [esc]
+    }
+
+    @objc func escapePressed() { onEscape?() }
+}
+
+struct FieldBox<Content: View>: View {
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+                SelectingTextField(text: $text, selectBaseName: dialog.selectBaseName, classic: t.classic, onSubmit: ok)
+--- NEW
+                SelectingTextField(text: $text, selectBaseName: dialog.selectBaseName, classic: t.classic, onSubmit: ok, onCancel: { model.dialog = nil })
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+                    SelectingTextField(text: $text, selectBaseName: false, classic: t.classic, onSubmit: ok)
+--- NEW
+                    SelectingTextField(text: $text, selectBaseName: false, classic: t.classic, onSubmit: ok, onCancel: { model.dialog = nil })
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    var toast: String?
+--- NEW
+    var toast: String?
+    /// Nur im UI-Test: empfangene Tasten.
+    var lastKey = ""
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+    func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
+        let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+--- NEW
+    func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
+        let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+        if isUITest { lastKey += Self.keyName(input, flags) + " " }
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+    // MARK: Antippen
+--- NEW
+    static func keyName(_ input: String, _ flags: UIKeyModifierFlags) -> String {
+        let names: [String: String] = [
+            UIKeyCommand.f1: "F1", UIKeyCommand.f2: "F2", UIKeyCommand.f3: "F3", UIKeyCommand.f4: "F4",
+            UIKeyCommand.f5: "F5", UIKeyCommand.f6: "F6", UIKeyCommand.f7: "F7", UIKeyCommand.f8: "F8",
+            UIKeyCommand.f9: "F9", UIKeyCommand.f10: "F10", "\t": "Tab", "\r": "Enter", " ": "Space",
+            UIKeyCommand.inputEscape: "Esc", UIKeyCommand.inputUpArrow: "Up", UIKeyCommand.inputDownArrow: "Down",
+            UIKeyCommand.inputLeftArrow: "Left", UIKeyCommand.inputRightArrow: "Right", "\u{8}": "Backspace"
+        ]
+        var mods = ""
+        if flags.contains(.control) { mods += "Ctrl+" }
+        if flags.contains(.alternate) { mods += "Alt+" }
+        if flags.contains(.shift) { mods += "Shift+" }
+        if flags.contains(.command) { mods += "Cmd+" }
+        return mods + (names[input] ?? input)
+    }
+
+    // MARK: Antippen
+--- END
+
+### EDIT PadCommander/Sources/UI/RootView.swift
+--- OLD
+        .overlay { DialogLayer(model: model) }
+--- NEW
+        .overlay(alignment: .topTrailing) {
+            if model.isUITest {
+                Text("Tasten: " + model.lastKey)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.red)
+                    .padding(4)
+                    .accessibilityIdentifier("lastkey")
+            }
+        }
+        .overlay { DialogLayer(model: model) }
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        // Hardware-Tastatur: Tab wechselt das Fenster, F7 = Neuer Ordner, Esc bricht ab
+        app.typeKey(XCUIKeyboardKey.tab, modifierFlags: [])
+        sleep(1)
+        shot("17-tastatur-tab")
+        app.typeKey(XCUIKeyboardKey.F7, modifierFlags: [])
+        let kfield = app.textFields["dialog-field"]
+        XCTAssertTrue(kfield.waitForExistence(timeout: 5), "F7 per Tastatur hat keinen Dialog geöffnet")
+        shot("18-tastatur-f7")
+        app.typeKey(XCUIKeyboardKey.escape, modifierFlags: [])
+        sleep(1)
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        sleep(1)
+        shot("19-tastatur-pfeile")
+--- NEW
+        // Hardware-Tastatur: protokolliert, was bei der App ankommt
+        func key(_ k: XCUIKeyboardKey, _ m: XCUIElement.KeyModifierFlags, _ label: String) {
+            app.typeKey(k, modifierFlags: m)
+            sleep(1)
+            print("TASTE[\(label)] -> \(el("lastkey").label)")
+        }
+        shot("17-vor-tastatur")
+        key(.tab, [], "Tab")
+        shot("17b-nach-tab")
+        key(.F7, [], "F7")
+        shot("18-tastatur-f7")
+        key(.escape, [], "Esc")
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
+        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        key(.downArrow, [], "Down")
+        key(.F5, [], "F5")
+        shot("19-tastatur-f5")
+        key(.escape, [], "Esc2")
+        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        key(XCUIKeyboardKey(rawValue: "t"), .control, "Ctrl+T")
+        shot("20-tastatur-ende")
+--- END
