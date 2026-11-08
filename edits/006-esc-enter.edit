@@ -1,0 +1,78 @@
+### EDIT PadCommander/Sources/App/App.swift
+--- OLD
+    @objc func keyPressed(_ sender: UIKeyCommand) {
+        model.handleKey(sender.input ?? "", sender.modifierFlags)
+    }
+--- NEW
+    @objc func keyPressed(_ sender: UIKeyCommand) {
+        model.handleKey(sender.input ?? "", sender.modifierFlags)
+    }
+
+    /// Esc und Enter kommen nicht zuverlaessig als Tastaturbefehl an, daher direkt ueber den Tastencode.
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        guard presentedViewController == nil, !model.blocksKeys else {
+            super.pressesBegan(presses, with: event)
+            return
+        }
+        var handled = false
+        for press in presses {
+            guard let key = press.key else { continue }
+            switch key.keyCode {
+            case .keyboardEscape:
+                model.handleKey(UIKeyCommand.inputEscape, key.modifierFlags)
+                handled = true
+            case .keyboardReturnOrEnter, .keypadEnter:
+                model.handleKey("\r", key.modifierFlags)
+                handled = true
+            default:
+                break
+            }
+        }
+        if !handled { super.pressesBegan(presses, with: event) }
+    }
+--- END
+
+### EDIT PadCommander/Sources/App/App.swift
+--- OLD
+        add(UIKeyCommand.inputEscape, [], "Markierung aufheben")
+--- NEW
+--- END
+
+### EDIT PadCommander/Sources/App/App.swift
+--- OLD
+        add("\r", [], "Öffnen")
+        add("\r", [.alternate], "Eigenschaften")
+--- NEW
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        key(.F7, [], "F7")
+        shot("18-tastatur-f7")
+        key(.escape, [], "Esc")
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
+        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
+        key(.downArrow, [], "Down")
+        key(.F5, [], "F5")
+        shot("19-tastatur-f5")
+        key(.escape, [], "Esc2")
+        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
+        key(XCUIKeyboardKey(rawValue: "t"), .control, "Ctrl+T")
+        shot("20-tastatur-ende")
+--- NEW
+        key(.downArrow, [], "Down")
+        key(.space, [], "Space")
+        shot("18-tastatur-markiert")
+        key(XCUIKeyboardKey(rawValue: "u"), .control, "Ctrl+U")
+        shot("19-tastatur-getauscht")
+        key(.escape, [], "Esc")
+        key(.return, [], "Enter")
+        shot("20-tastatur-enter")
+        // Esc im Textfeld eines Dialogs
+        wait("fkey-F7").tap()
+        XCTAssertTrue(app.textFields["dialog-field"].waitForExistence(timeout: 5))
+        key(.escape, [], "Esc im Feld")
+        print("ESC-FELD geschlossen: \(!app.textFields["dialog-field"].exists)")
+        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
+        shot("21-tastatur-ende")
+--- END
