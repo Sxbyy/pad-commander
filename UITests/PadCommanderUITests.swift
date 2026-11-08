@@ -134,5 +134,23 @@ final class PadCommanderUITests: XCTestCase {
         wait("search-start").tap()
         sleep(2)
         shot("16-suche")
+        app.buttons["Schließen"].firstMatch.tap()
+        sleep(2)
+
+        // Hardware-Tastatur: Tab wechselt das Fenster, F7 = Neuer Ordner, Esc bricht ab
+        app.typeKey(XCUIKeyboardKey.tab, modifierFlags: [])
+        sleep(1)
+        shot("17-tastatur-tab")
+        app.typeKey(XCUIKeyboardKey.F7, modifierFlags: [])
+        let kfield = app.textFields["dialog-field"]
+        XCTAssertTrue(kfield.waitForExistence(timeout: 5), "F7 per Tastatur hat keinen Dialog geöffnet")
+        shot("18-tastatur-f7")
+        app.typeKey(XCUIKeyboardKey.escape, modifierFlags: [])
+        sleep(1)
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        sleep(1)
+        shot("19-tastatur-pfeile")
     }
 }

@@ -377,7 +377,7 @@ extension AppModel {
         guard !items.isEmpty, let targetDir = inactive.dir else { flash("Nichts ausgewählt"); return }
         let suggestion = (items.count == 1 ? items[0].baseName : (p.components.last ?? "Archiv")) + ".zip"
         let target = inactive
-        dialog = .input(InputDialog(title: "Packen", prompt: "\(items.count) Element(e) packen nach \(target.location.name)\(target.relativePath) als:", text: suggestion, okTitle: "Packen", selectBaseName: true) { [weak self] text in
+        dialog = .input(InputDialog(title: "Packen", prompt: "\(items.count) Element(e) packen nach \(target.location.name):\(target.relativePath) als:", text: suggestion, okTitle: "Packen", selectBaseName: true) { [weak self] text in
             guard let self, var name = FileOps.validName(text) else { return }
             if !name.lowercased().hasSuffix(".zip") { name += ".zip" }
             let out = FileOps.uniqueURL(targetDir.appendingPathComponent(name))

@@ -304,7 +304,7 @@ struct FileRow: View {
         let t = model.theme
         if item.isParent { return t.classic ? "[..]" : ".." }
         if item.isDirectory && t.classic { return "[" + item.name + "]" }
-        if t.classic && !item.ext.isEmpty && cols.showExt { return item.baseName }
+        if !item.ext.isEmpty && cols.showExt { return item.baseName }
         return item.name
     }
 
