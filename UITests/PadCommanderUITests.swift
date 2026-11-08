@@ -85,11 +85,12 @@ final class PadCommanderUITests: XCTestCase {
         // F3 Vorschau
         wait("row-R-Bericht.pdf").tap()
         wait("fkey-F3").tap()
-        sleep(2)
+        sleep(5)
         shot("08-vorschau")
         let done = app.buttons["Done"]
         if done.waitForExistence(timeout: 3) { done.tap() } else { app.swipeDown() }
-        sleep(1)
+        sleep(2)
+        shot("08b-zurueck")
 
         // F8 Loeschen
         wait("row-R-Testordner").tap()

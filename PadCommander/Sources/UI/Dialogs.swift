@@ -70,7 +70,12 @@ struct DialogFrame<Content: View>: View {
             }
         }
         .bevel(theme, .raised, radius: theme.classic ? nil : 20)
-        .shadow(color: .black.opacity(theme.classic ? 0.35 : 0.6), radius: theme.classic ? 0 : 30, x: theme.classic ? 4 : 0, y: theme.classic ? 4 : 10)
+        .background {
+            RoundedRectangle(cornerRadius: theme.classic ? 0 : 20, style: .continuous)
+                .fill(Color.black.opacity(theme.classic ? 0.35 : 0.6))
+                .blur(radius: theme.classic ? 0 : 30)
+                .offset(x: theme.classic ? 4 : 0, y: theme.classic ? 4 : 10)
+        }
         .foregroundStyle(theme.faceText)
         .font(theme.font())
     }
