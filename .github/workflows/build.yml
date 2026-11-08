@@ -1,0 +1,122 @@
+name: Build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: build
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Änderungen anwenden
+        id: edits
+        run: |
+          if ls edits/*.edit >/dev/null 2>&1; then
+            python3 scripts/apply_edits.py 2>&1 | tee "$RUNNER_TEMP/edits.log"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -q -m "Änderungen angewendet [skip ci]"
+            git push -q origin HEAD:main
+          else
+            echo "keine Änderungen" > "$RUNNER_TEMP/edits.log"
+          fi
+          git rev-parse HEAD > "$RUNNER_TEMP/built_sha"
+
+      - name: Werkzeuge
+        run: |
+          brew install xcodegen
+          xcodebuild -version | tee "$RUNNER_TEMP/info.log"
+          xcodegen --version | tee -a "$RUNNER_TEMP/info.log"
+
+      - name: Projekt erzeugen
+        run: |
+          swift scripts/make_icon.swift PadCommander/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+          xcodegen generate
+
+      - name: Bauen (iPad, unsigniert)
+        id: build
+        run: |
+          set +e
+          xcodebuild -quiet -project PadCommander.xcodeproj -scheme PadCommander -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build > "$RUNNER_TEMP/build.log" 2>&1
+          rc=$?
+          set -e
+          grep -E "error:" "$RUNNER_TEMP/build.log" | sort -u | head -150 || true
+          if [ $rc -ne 0 ]; then tail -60 "$RUNNER_TEMP/build.log"; exit $rc; fi
+          mkdir -p out/Payload
+          cp -R build/Build/Products/Release-iphoneos/PadCommander.app out/Payload/
+          (cd out && zip -qry PadCommander.ipa Payload)
+          ls -la out
+
+      - name: UI-Test im iPad-Simulator
+        id: test
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 35
+        run: |
+          UDID=$(python3 scripts/pick_sim.py 2> "$RUNNER_TEMP/sim.txt")
+          cat "$RUNNER_TEMP/sim.txt"
+          mkdir -p "$RUNNER_TEMP/shots"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b || true
+          export TEST_RUNNER_SHOTS_DIR="$RUNNER_TEMP/shots"
+          set +e
+          xcodebuild -quiet test -project PadCommander.xcodeproj -scheme PadCommander \
+            -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build-sim \
+            -resultBundlePath "$RUNNER_TEMP/test.xcresult" > "$RUNNER_TEMP/test.log" 2>&1
+          rc=$?
+          tail -80 "$RUNNER_TEMP/test.log"
+          exit $rc
+
+      - name: Release (IPA)
+        if: steps.build.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(cat "$RUNNER_TEMP/built_sha")
+          gh release delete latest --yes --cleanup-tag || true
+          NOTES="Gebaut aus ${SHA:0:7} am $(TZ=Europe/Berlin date '+%d.%m.%Y %H:%M'). UI-Test: ${{ steps.test.outcome }}. Installation: siehe README (Sideloadly + kostenlose Apple-ID)."
+          gh release create latest out/PadCommander.ipa --title "Pad Commander (neuester Stand)" --notes "$NOTES" --target "$SHA" --latest
+
+      - name: Ergebnisse veröffentlichen
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          R="$RUNNER_TEMP/res"
+          mkdir -p "$R/shots"
+          {
+            echo "built=$(cat "$RUNNER_TEMP/built_sha" 2>/dev/null || echo "$GITHUB_SHA")"
+            echo "run=$GITHUB_RUN_ID"
+            echo "edits=${{ steps.edits.outcome }}"
+            echo "build=${{ steps.build.outcome }}"
+            echo "test=${{ steps.test.outcome }}"
+            date -u +"time=%Y-%m-%dT%H:%M:%SZ"
+          } > "$R/status.txt"
+          for f in edits.log info.log build.log test.log sim.txt; do
+            if [ -f "$RUNNER_TEMP/$f" ]; then cp "$RUNNER_TEMP/$f" "$R/"; fi
+          done
+          if [ -f "$RUNNER_TEMP/build.log" ]; then grep -E "error:" "$RUNNER_TEMP/build.log" | sort -u > "$R/errors.txt" || true; fi
+          if ! ls "$RUNNER_TEMP/shots"/*.png >/dev/null 2>&1 && [ -d "$RUNNER_TEMP/test.xcresult" ]; then
+            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/test.xcresult" --output-path "$RUNNER_TEMP/shots" || true
+          fi
+          cp "$RUNNER_TEMP/shots"/*.png "$R/shots/" 2>/dev/null || true
+          for f in "$R/shots"/*.png; do if [ -f "$f" ]; then sips -Z 1400 "$f" >/dev/null 2>&1 || true; fi; done
+          cd "$R"
+          git init -q
+          git checkout -q -b ci-results
+          git add -A
+          git -c user.name="ci" -c user.email="ci@users.noreply.github.com" commit -qm "Ergebnisse $GITHUB_RUN_ID"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-results
