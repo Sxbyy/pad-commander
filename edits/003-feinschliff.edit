@@ -1,0 +1,42 @@
+### EDIT PadCommander/Sources/Model/Zip.swift
+--- OLD
+        dialog = .input(InputDialog(title: "Packen", prompt: "\(items.count) Element(e) packen nach \(target.location.name)\(target.relativePath) als:", text: suggestion, okTitle: "Packen", selectBaseName: true) { [weak self] text in
+--- NEW
+        dialog = .input(InputDialog(title: "Packen", prompt: "\(items.count) Element(e) packen nach \(target.location.name):\(target.relativePath) als:", text: suggestion, okTitle: "Packen", selectBaseName: true) { [weak self] text in
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+        if t.classic && !item.ext.isEmpty && cols.showExt { return item.baseName }
+--- NEW
+        if !item.ext.isEmpty && cols.showExt { return item.baseName }
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        wait("search-start").tap()
+        sleep(2)
+        shot("16-suche")
+--- NEW
+        wait("search-start").tap()
+        sleep(2)
+        shot("16-suche")
+        app.buttons["Schließen"].firstMatch.tap()
+        sleep(2)
+
+        // Hardware-Tastatur: Tab wechselt das Fenster, F7 = Neuer Ordner, Esc bricht ab
+        app.typeKey(XCUIKeyboardKey.tab, modifierFlags: [])
+        sleep(1)
+        shot("17-tastatur-tab")
+        app.typeKey(XCUIKeyboardKey.F7, modifierFlags: [])
+        let kfield = app.textFields["dialog-field"]
+        XCTAssertTrue(kfield.waitForExistence(timeout: 5), "F7 per Tastatur hat keinen Dialog geöffnet")
+        shot("18-tastatur-f7")
+        app.typeKey(XCUIKeyboardKey.escape, modifierFlags: [])
+        sleep(1)
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
+        sleep(1)
+        shot("19-tastatur-pfeile")
+--- END
