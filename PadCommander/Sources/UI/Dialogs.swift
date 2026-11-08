@@ -118,9 +118,12 @@ struct SelectingTextField: UIViewRepresentable {
     var classic = true
     var identifier = "dialog-field"
     var onSubmit: () -> Void
+    var onCancel: (() -> Void)? = nil
 
     func makeUIView(context: Context) -> UITextField {
-        let tf = UITextField()
+        let tf = EscTextField()
+        let coordinator = context.coordinator
+        tf.onEscape = { [weak coordinator] in coordinator?.parent.onCancel?() }
         tf.text = text
         tf.font = UIFont.systemFont(ofSize: 16)
         tf.borderStyle = .none
@@ -173,6 +176,19 @@ struct SelectingTextField: UIViewRepresentable {
     }
 }
 
+/// Textfeld, das Esc selbst behandelt (sonst schluckt UIKit die Taste).
+final class EscTextField: UITextField {
+    var onEscape: (() -> Void)?
+
+    override var keyCommands: [UIKeyCommand]? {
+        let esc = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(escapePressed))
+        esc.wantsPriorityOverSystemBehavior = true
+        return [esc]
+    }
+
+    @objc func escapePressed() { onEscape?() }
+}
+
 struct FieldBox<Content: View>: View {
     let theme: Theme
     @ViewBuilder var content: () -> Content
@@ -209,7 +225,7 @@ struct InputDialogView: View {
         DialogFrame(theme: t, title: dialog.title) {
             Text(dialog.prompt)
             FieldBox(theme: t) {
-                SelectingTextField(text: $text, selectBaseName: dialog.selectBaseName, classic: t.classic, onSubmit: ok)
+                SelectingTextField(text: $text, selectBaseName: dialog.selectBaseName, classic: t.classic, onSubmit: ok, onCancel: { model.dialog = nil })
             }
             DialogButtons(theme: t, okTitle: dialog.okTitle, ok: ok, cancel: { model.dialog = nil })
         }
@@ -300,7 +316,7 @@ struct TransferDialogView: View {
                 Text(target.location.name + ":")
                     .font(t.font(15, weight: .semibold))
                 FieldBox(theme: t) {
-                    SelectingTextField(text: $text, selectBaseName: false, classic: t.classic, onSubmit: ok)
+                    SelectingTextField(text: $text, selectBaseName: false, classic: t.classic, onSubmit: ok, onCancel: { model.dialog = nil })
                 }
             }
             HStack(spacing: 8) {

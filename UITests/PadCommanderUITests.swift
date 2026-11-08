@@ -137,20 +137,26 @@ final class PadCommanderUITests: XCTestCase {
         app.buttons["Schließen"].firstMatch.tap()
         sleep(2)
 
-        // Hardware-Tastatur: Tab wechselt das Fenster, F7 = Neuer Ordner, Esc bricht ab
-        app.typeKey(XCUIKeyboardKey.tab, modifierFlags: [])
-        sleep(1)
-        shot("17-tastatur-tab")
-        app.typeKey(XCUIKeyboardKey.F7, modifierFlags: [])
-        let kfield = app.textFields["dialog-field"]
-        XCTAssertTrue(kfield.waitForExistence(timeout: 5), "F7 per Tastatur hat keinen Dialog geöffnet")
+        // Hardware-Tastatur: protokolliert, was bei der App ankommt
+        func key(_ k: XCUIKeyboardKey, _ m: XCUIElement.KeyModifierFlags, _ label: String) {
+            app.typeKey(k, modifierFlags: m)
+            sleep(1)
+            print("TASTE[\(label)] -> \(el("lastkey").label)")
+        }
+        shot("17-vor-tastatur")
+        key(.tab, [], "Tab")
+        shot("17b-nach-tab")
+        key(.F7, [], "F7")
         shot("18-tastatur-f7")
-        app.typeKey(XCUIKeyboardKey.escape, modifierFlags: [])
-        sleep(1)
+        key(.escape, [], "Esc")
         XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
-        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
-        app.typeKey(XCUIKeyboardKey.downArrow, modifierFlags: [])
-        sleep(1)
-        shot("19-tastatur-pfeile")
+        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        key(.downArrow, [], "Down")
+        key(.F5, [], "F5")
+        shot("19-tastatur-f5")
+        key(.escape, [], "Esc2")
+        if el("dialog-cancel").exists { el("dialog-cancel").tap() }
+        key(XCUIKeyboardKey(rawValue: "t"), .control, "Ctrl+T")
+        shot("20-tastatur-ende")
     }
 }

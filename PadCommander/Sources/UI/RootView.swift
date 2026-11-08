@@ -32,6 +32,15 @@ struct RootView: View {
                     .accessibilityIdentifier("toast")
             }
         }
+        .overlay(alignment: .topTrailing) {
+            if model.isUITest {
+                Text("Tasten: " + model.lastKey)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.red)
+                    .padding(4)
+                    .accessibilityIdentifier("lastkey")
+            }
+        }
         .overlay { DialogLayer(model: model) }
         .sheet(item: $model.sheet) { kind in
             SheetHost(model: model, kind: kind)

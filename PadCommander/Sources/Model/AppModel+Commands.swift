@@ -8,6 +8,7 @@ extension AppModel {
 
     func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
         let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+        if isUITest { lastKey += Self.keyName(input, flags) + " " }
         if busy != nil {
             if input == UIKeyCommand.inputEscape { busy?.cancel?() }
             return
@@ -67,6 +68,22 @@ extension AppModel {
         default:
             break
         }
+    }
+
+    static func keyName(_ input: String, _ flags: UIKeyModifierFlags) -> String {
+        let names: [String: String] = [
+            UIKeyCommand.f1: "F1", UIKeyCommand.f2: "F2", UIKeyCommand.f3: "F3", UIKeyCommand.f4: "F4",
+            UIKeyCommand.f5: "F5", UIKeyCommand.f6: "F6", UIKeyCommand.f7: "F7", UIKeyCommand.f8: "F8",
+            UIKeyCommand.f9: "F9", UIKeyCommand.f10: "F10", "\t": "Tab", "\r": "Enter", " ": "Space",
+            UIKeyCommand.inputEscape: "Esc", UIKeyCommand.inputUpArrow: "Up", UIKeyCommand.inputDownArrow: "Down",
+            UIKeyCommand.inputLeftArrow: "Left", UIKeyCommand.inputRightArrow: "Right", "\u{8}": "Backspace"
+        ]
+        var mods = ""
+        if flags.contains(.control) { mods += "Ctrl+" }
+        if flags.contains(.alternate) { mods += "Alt+" }
+        if flags.contains(.shift) { mods += "Shift+" }
+        if flags.contains(.command) { mods += "Cmd+" }
+        return mods + (names[input] ?? input)
     }
 
     // MARK: Antippen

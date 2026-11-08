@@ -113,6 +113,8 @@ final class AppModel {
     var busy: BusyState?
     /// Kurze Meldung unten in der Statusleiste.
     var toast: String?
+    /// Nur im UI-Test: empfangene Tasten.
+    var lastKey = ""
 
     @ObservationIgnored var lastTapURL: URL?
     @ObservationIgnored var lastTapTime = Date.distantPast
