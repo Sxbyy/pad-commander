@@ -1,0 +1,76 @@
+name: PadCommander
+options:
+  bundleIdPrefix: de.sxbyy
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+targets:
+  PadCommander:
+    type: application
+    platform: iOS
+    sources:
+      - path: PadCommander
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.sxbyy.padcommander
+        PRODUCT_NAME: PadCommander
+        TARGETED_DEVICE_FAMILY: "2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_FILE: PadCommander/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: PadCommander/Info.plist
+      properties:
+        CFBundleDisplayName: Pad Commander
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen:
+          UIColorName: ""
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        ITSAppUsesNonExemptEncryption: false
+        UIStatusBarHidden: false
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+  PadCommanderUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: PadCommander
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.sxbyy.padcommander.uitests
+        TEST_TARGET_NAME: PadCommander
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "2"
+schemes:
+  PadCommander:
+    build:
+      targets:
+        PadCommander: all
+        PadCommanderUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - PadCommanderUITests

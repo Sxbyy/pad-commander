@@ -1,0 +1,8 @@
+*.xcodeproj/
+build/
+build-sim/
+out/
+shots/
+PadCommander/Info.plist
+PadCommander/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+.DS_Store
