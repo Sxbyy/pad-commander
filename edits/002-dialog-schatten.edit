@@ -1,0 +1,31 @@
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+        .bevel(theme, .raised, radius: theme.classic ? nil : 20)
+        .shadow(color: .black.opacity(theme.classic ? 0.35 : 0.6), radius: theme.classic ? 0 : 30, x: theme.classic ? 4 : 0, y: theme.classic ? 4 : 10)
+--- NEW
+        .bevel(theme, .raised, radius: theme.classic ? nil : 20)
+        .background {
+            RoundedRectangle(cornerRadius: theme.classic ? 0 : 20, style: .continuous)
+                .fill(Color.black.opacity(theme.classic ? 0.35 : 0.6))
+                .blur(radius: theme.classic ? 0 : 30)
+                .offset(x: theme.classic ? 4 : 0, y: theme.classic ? 4 : 10)
+        }
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        wait("fkey-F3").tap()
+        sleep(2)
+        shot("08-vorschau")
+        let done = app.buttons["Done"]
+        if done.waitForExistence(timeout: 3) { done.tap() } else { app.swipeDown() }
+        sleep(1)
+--- NEW
+        wait("fkey-F3").tap()
+        sleep(5)
+        shot("08-vorschau")
+        let done = app.buttons["Done"]
+        if done.waitForExistence(timeout: 3) { done.tap() } else { app.swipeDown() }
+        sleep(2)
+        shot("08b-zurueck")
+--- END

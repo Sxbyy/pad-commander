@@ -69,15 +69,17 @@ jobs:
           UDID=$(python3 scripts/pick_sim.py 2> "$RUNNER_TEMP/sim.txt")
           cat "$RUNNER_TEMP/sim.txt"
           mkdir -p "$RUNNER_TEMP/shots"
+          touch "$RUNNER_TEMP/test-start"
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b || true
           export TEST_RUNNER_SHOTS_DIR="$RUNNER_TEMP/shots"
           set +e
-          xcodebuild -quiet test -project PadCommander.xcodeproj -scheme PadCommander \
+          xcodebuild test -project PadCommander.xcodeproj -scheme PadCommander \
             -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build-sim \
-            -resultBundlePath "$RUNNER_TEMP/test.xcresult" > "$RUNNER_TEMP/test.log" 2>&1
+            -resultBundlePath "$RUNNER_TEMP/test.xcresult" > "$RUNNER_TEMP/test-full.log" 2>&1
           rc=$?
-          tail -80 "$RUNNER_TEMP/test.log"
+          grep -E "error:|Test Case|Test Suite|\st = |Assertion|failed|Failed|crash|Crash|Executed" "$RUNNER_TEMP/test-full.log" | grep -v "warning:" > "$RUNNER_TEMP/test.log" || true
+          tail -60 "$RUNNER_TEMP/test.log"
           exit $rc
 
       - name: Release (IPA)
@@ -96,7 +98,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           R="$RUNNER_TEMP/res"
-          mkdir -p "$R/shots"
+          mkdir -p "$R/shots" "$R/crash"
           {
             echo "built=$(cat "$RUNNER_TEMP/built_sha" 2>/dev/null || echo "$GITHUB_SHA")"
             echo "run=$GITHUB_RUN_ID"
@@ -108,9 +110,17 @@ jobs:
           for f in edits.log info.log build.log test.log sim.txt; do
             if [ -f "$RUNNER_TEMP/$f" ]; then cp "$RUNNER_TEMP/$f" "$R/"; fi
           done
+          if [ -f "$RUNNER_TEMP/test-full.log" ]; then gzip -c "$RUNNER_TEMP/test-full.log" > "$R/test-full.log.gz"; fi
           if [ -f "$RUNNER_TEMP/build.log" ]; then grep -E "error:" "$RUNNER_TEMP/build.log" | sort -u > "$R/errors.txt" || true; fi
-          if ! ls "$RUNNER_TEMP/shots"/*.png >/dev/null 2>&1 && [ -d "$RUNNER_TEMP/test.xcresult" ]; then
-            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/test.xcresult" --output-path "$RUNNER_TEMP/shots" || true
+          if [ -d "$RUNNER_TEMP/test.xcresult" ]; then
+            xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/test.xcresult" > "$R/test-summary.json" 2>&1 || true
+            xcrun xcresulttool get test-results test-details --test-id "PadCommanderUITests/testRundgang()" --path "$RUNNER_TEMP/test.xcresult" > "$R/test-details.json" 2>&1 || true
+            if ! ls "$RUNNER_TEMP/shots"/*.png >/dev/null 2>&1; then
+              xcrun xcresulttool export attachments --path "$RUNNER_TEMP/test.xcresult" --output-path "$RUNNER_TEMP/shots" || true
+            fi
+          fi
+          if [ -f "$RUNNER_TEMP/test-start" ]; then
+            find "$HOME/Library/Logs/DiagnosticReports" -newer "$RUNNER_TEMP/test-start" \( -name "PadCommander*" -o -name "*.ips" \) -exec cp {} "$R/crash/" \; 2>/dev/null || true
           fi
           cp "$RUNNER_TEMP/shots"/*.png "$R/shots/" 2>/dev/null || true
           for f in "$R/shots"/*.png; do if [ -f "$f" ]; then sips -Z 1400 "$f" >/dev/null 2>&1 || true; fi; done
