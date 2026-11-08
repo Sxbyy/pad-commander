@@ -77,6 +77,29 @@ final class RootViewController: UIViewController {
     @objc func keyPressed(_ sender: UIKeyCommand) {
         model.handleKey(sender.input ?? "", sender.modifierFlags)
     }
+
+    /// Esc und Enter kommen nicht zuverlaessig als Tastaturbefehl an, daher direkt ueber den Tastencode.
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        guard presentedViewController == nil, !model.blocksKeys else {
+            super.pressesBegan(presses, with: event)
+            return
+        }
+        var handled = false
+        for press in presses {
+            guard let key = press.key else { continue }
+            switch key.keyCode {
+            case .keyboardEscape:
+                model.handleKey(UIKeyCommand.inputEscape, key.modifierFlags)
+                handled = true
+            case .keyboardReturnOrEnter, .keypadEnter:
+                model.handleKey("\r", key.modifierFlags)
+                handled = true
+            default:
+                break
+            }
+        }
+        if !handled { super.pressesBegan(presses, with: event) }
+    }
 }
 
 @MainActor
@@ -99,10 +122,9 @@ enum KeyMap {
         add(UIKeyCommand.inputPageDown, [], "Seite runter")
         add(UIKeyCommand.inputHome, [], "Anfang")
         add(UIKeyCommand.inputEnd, [], "Ende")
-        add(UIKeyCommand.inputEscape, [], "Markierung aufheben")
+
         add(UIKeyCommand.inputDelete, [], "Löschen")
-        add("\r", [], "Öffnen")
-        add("\r", [.alternate], "Eigenschaften")
+
         add("\t", [], "Fenster wechseln")
         add(" ", [], "Markieren")
         add("\u{8}", [], "Ordner hoch")

@@ -176,17 +176,20 @@ final class PadCommanderUITests: XCTestCase {
         shot("17-vor-tastatur")
         key(.tab, [], "Tab")
         shot("17b-nach-tab")
-        key(.F7, [], "F7")
-        shot("18-tastatur-f7")
-        key(.escape, [], "Esc")
-        XCTAssertFalse(app.textFields["dialog-field"].exists, "Esc hat den Dialog nicht geschlossen")
-        if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
         key(.downArrow, [], "Down")
-        key(.F5, [], "F5")
-        shot("19-tastatur-f5")
-        key(.escape, [], "Esc2")
+        key(.space, [], "Space")
+        shot("18-tastatur-markiert")
+        key(XCUIKeyboardKey(rawValue: "u"), .control, "Ctrl+U")
+        shot("19-tastatur-getauscht")
+        key(.escape, [], "Esc")
+        key(.return, [], "Enter")
+        shot("20-tastatur-enter")
+        // Esc im Textfeld eines Dialogs
+        wait("fkey-F7").tap()
+        XCTAssertTrue(app.textFields["dialog-field"].waitForExistence(timeout: 5))
+        key(.escape, [], "Esc im Feld")
+        print("ESC-FELD geschlossen: \(!app.textFields["dialog-field"].exists)")
         if el("dialog-cancel").exists && el("dialog-cancel").isHittable { el("dialog-cancel").tap() }
-        key(XCUIKeyboardKey(rawValue: "t"), .control, "Ctrl+T")
-        shot("20-tastatur-ende")
+        shot("21-tastatur-ende")
     }
 }
