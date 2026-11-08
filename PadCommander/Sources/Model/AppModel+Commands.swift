@@ -39,15 +39,22 @@ extension AppModel {
         case "\u{8}": p.goUp()
         case UIKeyCommand.inputEscape: p.unmarkAll()
         case UIKeyCommand.inputDelete: deleteSelection()
-        case UIKeyCommand.f1: sheet = .help
-        case UIKeyCommand.f2: rename()
+        case UIKeyCommand.f1:
+            if alt { cycleLocation(.left) } else { sheet = .help }
+        case UIKeyCommand.f2:
+            if alt { cycleLocation(.right) } else { rename() }
         case UIKeyCommand.f3: view()
-        case UIKeyCommand.f4: shift ? newFile() : edit()
-        case UIKeyCommand.f5: copy()
-        case UIKeyCommand.f6: shift ? rename() : move()
-        case UIKeyCommand.f7: alt ? (sheet = .search) : newFolder()
+        case UIKeyCommand.f4:
+            if shift { newFile() } else { edit() }
+        case UIKeyCommand.f5:
+            if alt { packSelection() } else { copy() }
+        case UIKeyCommand.f6:
+            if shift { rename() } else { move() }
+        case UIKeyCommand.f7:
+            if alt { sheet = .search } else { newFolder() }
         case UIKeyCommand.f8: deleteSelection()
-        case UIKeyCommand.f9: share()
+        case UIKeyCommand.f9:
+            if alt { unpackSelection() } else { share() }
         case UIKeyCommand.f10: sheet = .settings
         case "u" where ctrl: swapPanels()
         case "r" where ctrl: reloadBoth(); flash("Neu eingelesen")
@@ -58,7 +65,7 @@ extension AppModel {
         case "+" where ctrl: markGroup(select: true)
         case "-" where ctrl: markGroup(select: false)
         default:
-            if input == UIKeyCommand.f1 { cycleLocation(.left) }
+            break
         }
     }
 
@@ -411,7 +418,7 @@ extension AppModel {
         let p = active
         guard let c = p.cursorItem, !c.isParent else { return }
         let created = (try? c.url.resourceValues(forKeys: [.creationDateKey]))?.creationDate
-        var info = PropertiesInfo(item: c, location: p.location.name, path: p.relativePath, size: c.isDirectory ? nil : c.size, itemCount: nil, created: created)
+        let info = PropertiesInfo(item: c, location: p.location.name, path: p.relativePath, size: c.isDirectory ? nil : c.size, itemCount: nil, created: created)
         dialog = .properties(info)
         if c.isDirectory {
             let url = c.url
@@ -419,10 +426,10 @@ extension AppModel {
                 let s = FileOps.size(of: url)
                 let n = (FileManager.default.enumerator(atPath: url.path)?.allObjects.count) ?? 0
                 await MainActor.run {
-                    if case .properties(let cur)? = AppModel.shared.dialog, cur.item.url == url {
-                        info.size = s
-                        info.itemCount = n
-                        AppModel.shared.dialog = .properties(info)
+                    if case .properties(var cur)? = AppModel.shared.dialog, cur.item.url == url {
+                        cur.size = s
+                        cur.itemCount = n
+                        AppModel.shared.dialog = .properties(cur)
                     }
                     p.dirSizes[url] = s
                 }

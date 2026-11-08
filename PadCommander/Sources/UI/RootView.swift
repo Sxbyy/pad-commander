@@ -109,8 +109,9 @@ struct MenuBar: View {
     }
 
     private func menu<C: View>(_ s: String, @ViewBuilder _ content: () -> C) -> some View {
-        Menu {
-            content()
+        let items = content()
+        return Menu {
+            items
         } label: {
             title(s)
                 .font(model.theme.font(15))

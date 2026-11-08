@@ -226,7 +226,7 @@ struct HeaderRow: View {
                 .font(t.font(13, weight: t.classic ? .regular : .semibold))
                 .foregroundStyle(t.classic ? Color.black : t.secondaryText)
                 .lineLimit(1)
-                .frame(maxWidth: width == nil ? .infinity : width, alignment: align)
+                .frame(maxWidth: width ?? .infinity, alignment: align)
                 .frame(width: width)
                 .padding(.horizontal, 4)
                 .frame(height: 24)

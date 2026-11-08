@@ -162,8 +162,8 @@ final class PanelModel {
     /// Springt zu einer Datei (z. B. aus der Suche), wenn sie im selben Ort liegt.
     func reveal(_ url: URL) -> Bool {
         guard let root else { return false }
-        let rootComps = root.standardizedFileURL.pathComponents
-        var comps = url.deletingLastPathComponent().standardizedFileURL.pathComponents
+        let rootComps = root.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+        var comps = url.deletingLastPathComponent().resolvingSymlinksInPath().standardizedFileURL.pathComponents
         guard comps.count >= rootComps.count, Array(comps.prefix(rootComps.count)) == rootComps else { return false }
         comps.removeFirst(rootComps.count)
         components = comps

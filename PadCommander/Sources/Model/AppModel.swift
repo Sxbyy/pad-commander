@@ -116,6 +116,9 @@ final class AppModel {
 
     @ObservationIgnored var lastTapURL: URL?
     @ObservationIgnored var lastTapTime = Date.distantPast
+    @ObservationIgnored var dragSources: [URL] = []
+    @ObservationIgnored var dragSide: Side = .left
+    @ObservationIgnored var dragTime = Date.distantPast
     @ObservationIgnored private let defaults = UserDefaults.standard
     @ObservationIgnored private var toastTask: Task<Void, Never>?
     let isUITest = CommandLine.arguments.contains("-uitest")

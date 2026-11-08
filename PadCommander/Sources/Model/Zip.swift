@@ -153,9 +153,9 @@ final class UnzipJob: @unchecked Sendable {
             guard lh.count == 30, rd32(lh, 0) == 0x0403_4B50 else { throw OpError("Das Archiv ist beschädigt (\(e.name)).") }
             let dataStart = UInt64(e.localOffset) + 30 + UInt64(rd16(lh, 26)) + UInt64(rd16(lh, 28))
             try h.seek(toOffset: dataStart)
-            let target = dst.lastPathComponent
+            let targetName = dst.lastPathComponent
             let out = FileOps.uniqueURLIfNeeded(dst)
-            guard fm.createFile(atPath: out.path, contents: nil) else { throw OpError("„\(target)“ kann nicht angelegt werden.") }
+            guard fm.createFile(atPath: out.path, contents: nil) else { throw OpError("„\(targetName)“ kann nicht angelegt werden.") }
             let oh = try FileHandle(forWritingTo: out)
             var crc: UInt32 = 0
             var remaining = Int(e.compressedSize)
@@ -165,9 +165,12 @@ final class UnzipJob: @unchecked Sendable {
                     try oh.write(contentsOf: d)
                     done += Int64(d.count)
                 }
-                let filter: OutputFilter? = e.method == 8 ? try OutputFilter(.decompress, using: .zlib) { (d: Data?) in
-                    if let d { try sink(d) }
-                } : nil
+                var filter: OutputFilter?
+                if e.method == 8 {
+                    filter = try OutputFilter(.decompress, using: .zlib) { (d: Data?) in
+                        if let d { try sink(d) }
+                    }
+                }
                 while remaining > 0 {
                     if cancelled { throw CancellationError() }
                     let chunk = try h.read(upToCount: min(remaining, 1 << 20)) ?? Data()
@@ -273,9 +276,12 @@ final class ZipJob: @unchecked Sendable {
             if !item.isDir {
                 let input = try FileHandle(forReadingFrom: item.url)
                 defer { try? input.close() }
-                let filter: OutputFilter? = method == 8 ? try OutputFilter(.compress, using: .zlib) { (d: Data?) in
-                    if let d { try out.write(contentsOf: d); csize += UInt64(d.count) }
-                } : nil
+                var filter: OutputFilter?
+                if method == 8 {
+                    filter = try OutputFilter(.compress, using: .zlib) { (d: Data?) in
+                        if let d { try out.write(contentsOf: d); csize += UInt64(d.count) }
+                    }
+                }
                 while true {
                     if cancelled { throw CancellationError() }
                     let chunk = try autoreleasepool { try input.read(upToCount: 1 << 20) } ?? Data()
