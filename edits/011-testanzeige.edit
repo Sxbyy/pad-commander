@@ -1,6 +1,0 @@
-### EDIT PadCommander/Sources/UI/RootView.swift
---- OLD
-.foregroundStyle(.red)
---- NEW
-.foregroundStyle(model.lastKey.isEmpty ? Color.clear : Color.red)
---- END

@@ -36,7 +36,7 @@ struct RootView: View {
             if model.isUITest {
                 Text("Tasten: " + model.lastKey)
                     .font(.system(size: 11))
-                    .foregroundStyle(.red)
+                    .foregroundStyle(model.lastKey.isEmpty ? Color.clear : Color.red)
                     .padding(4)
                     .accessibilityIdentifier("lastkey")
             }
