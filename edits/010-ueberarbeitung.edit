@@ -1,0 +1,628 @@
+Ueberarbeitung 1.1: Cmd-Tasten statt F-Tasten, Schriftgroesse, Dialog-Tasten, Swift-Playground-tauglich, kleine Fehler.
+
+### EDIT project.yml
+--- OLD
+    MARKETING_VERSION: "1.0"
+--- NEW
+    MARKETING_VERSION: "1.1"
+--- END
+
+### EDIT project.yml
+--- OLD
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+--- NEW
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    var title: String { self == .classic ? "Klassisch" : "Nacht" }
+}
+--- NEW
+    var title: String { self == .classic ? "Klassisch" : "Nacht" }
+}
+
+/// Schriftgroesse der Oberflaeche (Einstellungen, Cmd+Plus / Cmd+Minus).
+enum TextSize: String, CaseIterable, Codable, Identifiable {
+    case klein, normal, gross
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .klein: return "Klein"
+        case .normal: return "Normal"
+        case .gross: return "Groß"
+        }
+    }
+    var factor: CGFloat {
+        switch self {
+        case .klein: return 0.88
+        case .normal: return 1
+        case .gross: return 1.2
+        }
+    }
+}
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    var dialog: Dialog?
+    var sheet: SheetKind?
+--- NEW
+    var textSize: TextSize = .normal
+    /// Offener eigener Dialog. Beim Schliessen wird die Zeit gemerkt, damit dieselbe Enter-/Esc-Taste
+    /// nicht gleich noch im Hauptfenster wirkt.
+    var dialog: Dialog? {
+        get { currentDialog }
+        set {
+            if newValue == nil && currentDialog != nil { dialogClosedAt = Date() }
+            currentDialog = newValue
+        }
+    }
+    private(set) var currentDialog: Dialog?
+    var sheet: SheetKind?
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    @ObservationIgnored var dragTime = Date.distantPast
+--- NEW
+    @ObservationIgnored var dragTime = Date.distantPast
+    @ObservationIgnored var dragNames: Set<String> = []
+    @ObservationIgnored var dialogClosedAt = Date.distantPast
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+"theme", "showHidden", "activeSide"]
+--- NEW
+"theme", "textSize", "showHidden", "activeSide"]
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    var theme: Theme { Theme.make(themeKind) }
+--- NEW
+    var theme: Theme { Theme.make(themeKind, scale: textSize.factor) }
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+        if let raw = defaults.string(forKey: "theme"), let t = ThemeKind(rawValue: raw) { themeKind = t }
+--- NEW
+        if let raw = defaults.string(forKey: "theme"), let t = ThemeKind(rawValue: raw) { themeKind = t }
+        if let raw = defaults.string(forKey: "textSize"), let s = TextSize(rawValue: raw) { textSize = s }
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel.swift
+--- OLD
+    func setShowHidden(_ v: Bool) {
+--- NEW
+    func setTextSize(_ s: TextSize) {
+        textSize = s
+        defaults.set(s.rawValue, forKey: "textSize")
+    }
+
+    /// Schrift groesser (+1) oder kleiner (-1).
+    func stepTextSize(_ delta: Int) {
+        let all = TextSize.allCases
+        let i = all.firstIndex(of: textSize) ?? 1
+        let n = min(max(i + delta, 0), all.count - 1)
+        setTextSize(all[n])
+        flash("Schriftgröße: " + all[n].title)
+    }
+
+    func setShowHidden(_ v: Bool) {
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+    func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
+        let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+--- NEW
+    /// F1 ... F10 in der Reihenfolge der Ziffern 1 ... 0 (Cmd+Ziffer ersetzt die F-Taste).
+    static let fKeys: [String] = [UIKeyCommand.f1, UIKeyCommand.f2, UIKeyCommand.f3, UIKeyCommand.f4, UIKeyCommand.f5,
+                                  UIKeyCommand.f6, UIKeyCommand.f7, UIKeyCommand.f8, UIKeyCommand.f9, UIKeyCommand.f10]
+    static let digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+
+    func handleKey(_ rawInput: String, _ rawFlags: UIKeyModifierFlags) {
+        var input = rawInput
+        var flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+        // Apple-Tastaturen haben keine F-Tasten und oft kein Esc: Cmd+1 ... Cmd+0 = F1 ... F10, Cmd+. = Esc
+        if flags.contains(.command) {
+            if let i = Self.digits.firstIndex(of: input) {
+                input = Self.fKeys[i]
+                flags.remove(.command)
+            } else if input == "." {
+                input = UIKeyCommand.inputEscape
+                flags.remove(.command)
+            }
+        }
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+        guard !blocksKeys else { return }
+        let p = active
+--- NEW
+        // Dieselbe Enter-/Esc-Taste, die gerade einen Dialog geschlossen hat, nicht noch einmal auswerten
+        if input == "\r" || input == UIKeyCommand.inputEscape, Date().timeIntervalSince(dialogClosedAt) < 0.35 { return }
+        if let d = dialog {
+            dialogKey(input, d)
+            return
+        }
+        guard sheet == nil else { return }
+        let p = active
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+        let ctrl = flags.contains(.control)
+--- NEW
+        let ctrl = flags.contains(.control)
+        let cmd = flags.contains(.command)
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+        case "-" where ctrl: markGroup(select: false)
+--- NEW
+        case "-" where ctrl: markGroup(select: false)
+        case "+" where cmd, "=" where cmd: stepTextSize(1)
+        case "-" where cmd: stepTextSize(-1)
+--- END
+
+### EDIT PadCommander/Sources/Model/AppModel+Commands.swift
+--- OLD
+    static func keyName(_ input: String, _ flags: UIKeyModifierFlags) -> String {
+--- NEW
+    /// Enter / Esc, solange ein eigener Dialog offen ist und kein Textfeld die Taste bekommt.
+    private func dialogKey(_ input: String, _ d: Dialog) {
+        let esc = input == UIKeyCommand.inputEscape
+        guard esc || input == "\r" else { return }
+        switch d {
+        case .confirm(let c):
+            dialog = nil
+            if !esc { c.action() }
+        case .message, .properties:
+            dialog = nil
+        case .conflict(let c):
+            if esc { c.resolve(.cancel) }
+        case .input, .transfer:
+            if esc { dialog = nil }
+        }
+    }
+
+    static func keyName(_ input: String, _ flags: UIKeyModifierFlags) -> String {
+--- END
+
+### EDIT PadCommander/Sources/UI/Theme.swift
+--- OLD
+    let fontDesign: Font.Design
+
+    func font(_ size: CGFloat? = nil, weight: Font.Weight = .regular) -> Font {
+        .system(size: size ?? fontSize, weight: weight, design: fontDesign)
+    }
+--- NEW
+    let fontDesign: Font.Design
+    /// Faktor aus der Einstellung Schriftgroesse (Klein / Normal / Gross).
+    var scale: CGFloat = 1
+
+    func font(_ size: CGFloat? = nil, weight: Font.Weight = .regular) -> Font {
+        .system(size: size.map { $0 * scale } ?? fontSize, weight: weight, design: fontDesign)
+    }
+--- END
+
+### EDIT PadCommander/Sources/UI/Theme.swift
+--- OLD
+    static func make(_ k: ThemeKind) -> Theme {
+--- NEW
+    static func make(_ k: ThemeKind, scale s: CGFloat = 1) -> Theme {
+--- END
+
+### EDIT PadCommander/Sources/UI/Theme.swift
+--- OLD
+radius: 0, rowHeight: 30, fontSize: 15, fontDesign: .default)
+--- NEW
+radius: 0, rowHeight: (30 * s).rounded(), fontSize: 15 * s, fontDesign: .default, scale: s)
+--- END
+
+### EDIT PadCommander/Sources/UI/Theme.swift
+--- OLD
+radius: 16, rowHeight: 34, fontSize: 15, fontDesign: .rounded)
+--- NEW
+radius: 16, rowHeight: (34 * s).rounded(), fontSize: 15 * s, fontDesign: .rounded, scale: s)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+    static let ext: CGFloat = 50
+    static let size: CGFloat = 98
+    static let date: CGFloat = 134
+--- NEW
+    let ext: CGFloat
+    let size: CGFloat
+    let date: CGFloat
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+    init(width: CGFloat) {
+        showDate = width > 480
+        showExt = width > 330
+        showSize = width > 250
+    }
+--- NEW
+    init(width: CGFloat, scale: CGFloat = 1) {
+        ext = (50 * scale).rounded()
+        size = (98 * scale).rounded()
+        date = (134 * scale).rounded()
+        showDate = width > 480 * scale
+        showExt = width > 330 * scale
+        showSize = width > 250 * scale
+    }
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+            let cols = Columns(width: geo.size.width)
+--- NEW
+            let cols = Columns(width: geo.size.width, scale: t.scale)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+head(.ext, width: Columns.ext,
+--- NEW
+head(.ext, width: cols.ext,
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+head(.size, width: Columns.size,
+--- NEW
+head(.size, width: cols.size,
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+head(.date, width: Columns.date,
+--- NEW
+head(.date, width: cols.date,
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+.frame(width: Columns.ext, alignment: .leading)
+--- NEW
+.frame(width: cols.ext, alignment: .leading)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+.frame(width: Columns.size, alignment: .trailing)
+--- NEW
+.frame(width: cols.size, alignment: .trailing)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+.frame(width: Columns.date, alignment: .trailing)
+--- NEW
+.frame(width: cols.date, alignment: .trailing)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+                .font(.system(size: 15))
+                .foregroundStyle(iconColor)
+                .frame(width: 30, height: t.rowHeight)
+--- NEW
+                .font(.system(size: 15 * t.scale))
+                .foregroundStyle(iconColor)
+                .frame(width: (30 * t.scale).rounded(), height: t.rowHeight)
+--- END
+
+### EDIT PadCommander/Sources/UI/PanelView.swift
+--- OLD
+Text("In der Dateien-App: Auf meinem iPad › Pad Commander")
+--- NEW
+Text(AppInfo.homeHint)
+--- END
+
+### EDIT PadCommander/Sources/UI/RootView.swift
+--- OLD
+Text("Pad Commander 1.0 
+--- NEW
+Text("Pad Commander \(AppInfo.version) 
+--- END
+
+### EDIT PadCommander/Sources/UI/RootView.swift
+--- OLD
+                Picker("Design", selection: Binding(get: { m.themeKind }, set: { m.setTheme($0) })) {
+--- NEW
+                Picker("Schriftgröße (⌘+ / ⌘-)", selection: Binding(get: { m.textSize }, set: { m.setTextSize($0) })) {
+                    ForEach(TextSize.allCases) { s in Text(s.title).tag(s) }
+                }
+                Picker("Design", selection: Binding(get: { m.themeKind }, set: { m.setTheme($0) })) {
+--- END
+
+### EDIT PadCommander/Sources/UI/RootView.swift
+--- OLD
+                Button("Tasten und Gesten (F1)", systemImage: "keyboard") { m.sheet = .help }
+--- NEW
+                Button("Tasten und Gesten (F1 / ⌘1)", systemImage: "keyboard") { m.sheet = .help }
+                Button("Über Pad Commander", systemImage: "info.circle") {
+                    m.showMessage("Über Pad Commander", AppInfo.aboutText)
+                }
+--- END
+
+### EDIT PadCommander/Sources/UI/Sheets.swift
+--- OLD
+                    Toggle("Versteckte Dateien anzeigen",
+--- NEW
+                    Picker("Schriftgröße", selection: Binding(get: { m.textSize }, set: { m.setTextSize($0) })) {
+                        ForEach(TextSize.allCases) { s in Text(s.title).tag(s) }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("textsize")
+                    Toggle("Versteckte Dateien anzeigen",
+--- END
+
+### EDIT PadCommander/Sources/UI/Sheets.swift
+--- OLD
+Text("„iPad“ ist der eigene Ordner der App (Dateien-App: Auf meinem iPad › Pad Commander). Weitere Orte
+--- NEW
+Text("„iPad“: " + AppInfo.homeHint + ". Weitere Orte
+--- END
+
+### EDIT PadCommander/Sources/UI/Sheets.swift
+--- OLD
+LabeledContent("Version", value: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0")
+--- NEW
+LabeledContent("Version", value: AppInfo.versionText)
+                    LabeledContent("Läuft als", value: AppInfo.runsAs)
+--- END
+
+### EDIT PadCommander/Sources/UI/Sheets.swift
+--- OLD
+        ("Alt+F1 / Alt+F2", "Ort links / rechts wechseln"), ("Alt+Enter", "Eigenschaften"),
+--- NEW
+        ("Alt+F1 / Alt+F2", "Ort links / rechts wechseln"), ("Alt+Enter", "Eigenschaften"),
+        ("⌘1 … ⌘0", "Wie F1 … F10 (für Tastaturen ohne F-Tasten)"),
+        ("⌘⌥1 / ⌘⌥2 / ⌘⌥5 / ⌘⌥7 / ⌘⌥9", "Wie Alt+F1 / Alt+F2 / Alt+F5 / Alt+F7 / Alt+F9"),
+        ("⌘.", "Wie Esc: Dialog schließen, Markierung aufheben, Abbrechen"),
+        ("⌘+ / ⌘-", "Schrift größer / kleiner"),
+--- END
+
+### EDIT PadCommander/Sources/UI/Sheets.swift
+--- OLD
+                Section("Tastatur") {
+                    ForEach(keys.indices, id: \.self) { i in
+                        LabeledContent(keys[i].0, value: keys[i].1)
+                    }
+                }
+--- NEW
+                Section {
+                    ForEach(keys.indices, id: \.self) { i in
+                        LabeledContent(keys[i].0, value: keys[i].1)
+                    }
+                } header: {
+                    Text("Tastatur")
+                } footer: {
+                    Text("Apple-Tastaturen haben oft keine F-Tasten und kein Esc: dann ⌘ + Ziffer und ⌘. nehmen. Bei Tastaturen mit F-Tasten muss man je nach Modell zusätzlich fn bzw. die Globus-Taste drücken. Esc lässt sich auch auf die Feststelltaste legen: Einstellungen › Allgemein › Tastatur › Hardwaretastatur › Sondertasten.")
+                }
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+    private func ok() {
+        let value = text
+--- NEW
+    private func ok() {
+        guard model.dialog != nil else { return }
+        let value = text
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+    private func ok() {
+        var d = dialog
+--- NEW
+    private func ok() {
+        guard model.dialog != nil else { return }
+        var d = dialog
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+            DialogButtons(theme: t, okTitle: dialog.okTitle, destructive: dialog.destructive, ok: {
+                model.dialog = nil
+--- NEW
+            DialogButtons(theme: t, okTitle: dialog.okTitle, destructive: dialog.destructive, ok: {
+                guard model.dialog != nil else { return }
+                model.dialog = nil
+--- END
+
+### EDIT PadCommander/Sources/UI/Dialogs.swift
+--- OLD
+        esc.wantsPriorityOverSystemBehavior = true
+        return [esc]
+--- NEW
+        esc.wantsPriorityOverSystemBehavior = true
+        let dot = UIKeyCommand(input: ".", modifierFlags: .command, action: #selector(escapePressed))
+        dot.wantsPriorityOverSystemBehavior = true
+        return [esc, dot]
+--- END
+
+### EDIT PadCommander/Sources/Model/PanelModel.swift
+--- OLD
+    @ObservationIgnored private var watchedFD: Int32 = -1
+--- NEW
+    @ObservationIgnored private var watchedFD: Int32 = -1
+    @ObservationIgnored private var pendingReload: DispatchWorkItem?
+--- END
+
+### EDIT PadCommander/Sources/Model/PanelModel.swift
+--- OLD
+            // kurz warten, bis Schreibvorgaenge fertig sind
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in self?.reload() }
+--- NEW
+            // kurz warten, bis Schreibvorgaenge fertig sind; viele Ereignisse ergeben nur ein Neueinlesen
+            self.pendingReload?.cancel()
+            let work = DispatchWorkItem { [weak self] in self?.reload() }
+            self.pendingReload = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
+--- END
+
+### EDIT PadCommander/Sources/Model/Incoming.swift
+--- OLD
+        dragSources = sources
+        dragSide = panel.side
+--- NEW
+        dragSources = sources
+        dragNames = Set([item.name] + sources.map { $0.lastPathComponent })
+        dragSide = panel.side
+--- END
+
+### EDIT PadCommander/Sources/Model/Incoming.swift
+--- OLD
+        let internalDrag = !dragSources.isEmpty && Date().timeIntervalSince(dragTime) < 120
+        if internalDrag {
+            let sources = dragSources
+            let from = dragSide
+            dragSources = []
+--- NEW
+        // Eigener Ziehvorgang? Ein abgebrochener alter darf eine Datei aus einer anderen App nicht kapern.
+        let names = dragNames
+        let foreign = providers.contains { p in p.suggestedName.map { !names.contains($0) } ?? false }
+        let internalDrag = !dragSources.isEmpty && Date().timeIntervalSince(dragTime) < 120 && !foreign
+        let sources = dragSources
+        dragSources = []
+        dragNames = []
+        if internalDrag {
+            let from = dragSide
+--- END
+
+### EDIT PadCommander/Sources/Model/Zip.swift
+--- OLD
+        let items = collect()
+        let total = max(1, sources.reduce(Int64(0)) { $0 + FileOps.size(of: $1) })
+--- NEW
+        let items = collect()
+        if items.count > 0xFFFF { throw OpError("Mehr als 65.535 Einträge lassen sich (noch) nicht in ein Archiv packen.") }
+        let total = max(1, sources.reduce(Int64(0)) { $0 + FileOps.size(of: $1) })
+--- END
+
+### EDIT PadCommander/Sources/Model/Zip.swift
+--- OLD
+    func unpack(_ item: FileItem, into panel: PanelModel) {
+        guard let dir = panel.dir else { return }
+        let folder = FileOps.uniqueURL(dir.appendingPathComponent(item.baseName, isDirectory: true))
+        let job = UnzipJob(archive: item.url, target: folder)
+        run(title: "Entpacken", cancel: { job.cancel() }, select: folder.lastPathComponent, in: panel) { [weak self] in
+            job.report = { pr in Task { @MainActor in self?.busy?.progress = pr } }
+            try await Task.detached {
+                try FileOps.coordinatedRead(item.url) { _ in try job.run() }
+            }.value
+        }
+    }
+--- NEW
+    func unpack(_ item: FileItem, into panel: PanelModel) {
+        unpack([item], into: panel)
+    }
+
+    /// Mehrere Archive nacheinander entpacken, jedes in einen eigenen Unterordner.
+    func unpack(_ items: [FileItem], into panel: PanelModel) {
+        guard let dir = panel.dir, !items.isEmpty else { return }
+        let jobs: [(URL, UnzipJob)] = items.map { item in
+            (item.url, UnzipJob(archive: item.url, target: FileOps.uniqueURL(dir.appendingPathComponent(item.baseName, isDirectory: true))))
+        }
+        let select = jobs.last?.1.target.lastPathComponent
+        run(title: "Entpacken", cancel: { jobs.forEach { $0.1.cancel() } }, select: select, in: panel) { [weak self] in
+            for (archive, job) in jobs {
+                job.report = { pr in Task { @MainActor in self?.busy?.progress = pr } }
+                try await Task.detached {
+                    try FileOps.coordinatedRead(archive) { _ in try job.run() }
+                }.value
+            }
+        }
+    }
+--- END
+
+### EDIT PadCommander/Sources/Model/Zip.swift
+--- OLD
+        guard let first = zips.first else { flash("Kein ZIP-Archiv ausgewählt"); return }
+        unpack(first, into: inactive)
+--- NEW
+        guard !zips.isEmpty else { flash("Kein ZIP-Archiv ausgewählt"); return }
+        unpack(zips, into: inactive)
+        active.unmarkAll()
+--- END
+
+### EDIT PadCommander/Sources/Model/DemoData.swift
+--- OLD
+    static let welcomeText = """
+--- NEW
+    private static var homeLine: String {
+        AppInfo.filesAppVisible
+            ? "Dieser Ordner hier („iPad“) ist in der Dateien-App unter\n„Auf meinem iPad › Pad Commander“ zu finden."
+            : "In Swift Playground ist dieser Ordner („iPad“) nicht in der Dateien-App\nsichtbar – hol dir deine Ordner einfach über „+“ dazu."
+    }
+
+    static let welcomeText = """
+--- END
+
+### EDIT PadCommander/Sources/Model/DemoData.swift
+--- OLD
+    Dieser Ordner hier („iPad“) ist in der Dateien-App unter
+    „Auf meinem iPad › Pad Commander“ zu finden.
+    """
+--- NEW
+    \(homeLine)
+
+    Mit Tastatur: F1 … F10 oder ⌘1 … ⌘0 (für Tastaturen ohne F-Tasten).
+    Alle Tasten und Gesten zeigt die Hilfe (F1 bzw. ⌘1).
+    """
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        key(.return, [], "Enter")
+        shot("20-tastatur-enter")
+--- NEW
+        key(.return, [], "Enter")
+        shot("20-tastatur-enter")
+        // Cmd+Ziffer statt F-Taste (kommt im Simulator unverfaelscht an)
+        key(XCUIKeyboardKey(rawValue: "7"), .command, "Cmd+7")
+        XCTAssertTrue(app.textFields["dialog-field"].waitForExistence(timeout: 5), "Cmd+7 hat keinen Ordner-Dialog geöffnet")
+        shot("20b-cmd7-neuer-ordner")
+        key(XCUIKeyboardKey(rawValue: "."), .command, "Cmd+.")
+        sleep(1)
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Cmd+. hat den Dialog nicht geschlossen")
+        // Schriftgroesse
+        key(XCUIKeyboardKey(rawValue: "="), .command, "Cmd+=")
+        shot("20c-schrift-gross")
+        key(XCUIKeyboardKey(rawValue: "-"), .command, "Cmd+-")
+--- END
+
+### EDIT UITests/PadCommanderUITests.swift
+--- OLD
+        print("ZUORDNUNG Alt+F7 -> " + String(el("lastkey").label.dropFirst(before.count)))
+--- NEW
+        print("ZUORDNUNG Alt+F7 -> " + String(el("lastkey").label.dropFirst(before.count)))
+        // Cmd+1 ... Cmd+0 und Cmd+. muessen genau F1 ... F10 und Esc ergeben
+        before = el("lastkey").label
+        for d in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."] {
+            app.typeKey(d, modifierFlags: .command)
+            usleep(400_000)
+        }
+        let cmdResult = String(el("lastkey").label.dropFirst(before.count)).trimmingCharacters(in: .whitespaces)
+        print("ZUORDNUNG Cmd+Ziffern -> " + cmdResult)
+        XCTAssertEqual(cmdResult, "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 Esc")
+--- END

@@ -1,41 +1,36 @@
 import UIKit
 import SwiftUI
 
+/// Einstieg der App. Dieselben Quellen laufen als installierte App (IPA) und als App in „Swift Playground“ auf dem iPad.
 @main
-final class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        true
-    }
+struct PadCommanderApp: App {
+    @Environment(\.scenePhase) private var phase
 
-    func application(_ application: UIApplication,
-                     configurationForConnecting connectingSceneSession: UISceneSession,
-                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let config = UISceneConfiguration(name: "Default", sessionRole: connectingSceneSession.role)
-        config.delegateClass = SceneDelegate.self
-        return config
+    var body: some Scene {
+        WindowGroup {
+            RootScene()
+                .onOpenURL { url in AppModel.shared.receive(url: url) }
+                .onChange(of: phase) { _, now in
+                    if now == .active { AppModel.shared.reloadBoth() }
+                }
+        }
     }
 }
 
-final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var window: UIWindow?
+/// Fenster-Inhalt: der RootViewController (Tastatur, UIKit-Fenster) mit der SwiftUI-Oberflaeche darin.
+struct RootScene: View {
+    let model = AppModel.shared
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let ws = scene as? UIWindowScene else { return }
-        let w = UIWindow(windowScene: ws)
-        w.rootViewController = RootViewController()
-        w.makeKeyAndVisible()
-        window = w
-        for ctx in connectionOptions.urlContexts { AppModel.shared.receive(url: ctx.url) }
+    var body: some View {
+        RootControllerView()
+            .ignoresSafeArea()
+            .preferredColorScheme(model.themeKind == .classic ? .light : .dark)
     }
+}
 
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        for ctx in URLContexts { AppModel.shared.receive(url: ctx.url) }
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        AppModel.shared.reloadBoth()
-    }
+struct RootControllerView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> RootViewController { RootViewController() }
+    func updateUIViewController(_ controller: RootViewController, context: Context) {}
 }
 
 /// Haelt die SwiftUI-Oberflaeche und nimmt die Tastaturbefehle entgegen.
@@ -64,13 +59,15 @@ final class RootViewController: UIViewController {
         becomeFirstResponder()
     }
 
+    /// Holt sich die Tastatur zurueck, sobald kein Textfeld und kein anderes Fenster sie braucht.
     private func claimKeyboard() {
         guard presentedViewController == nil, !model.blocksKeys, !isFirstResponder else { return }
         becomeFirstResponder()
     }
 
     override var keyCommands: [UIKeyCommand]? {
-        if presentedViewController != nil || model.blocksKeys { return nil }
+        if presentedViewController != nil || model.sheet != nil { return nil }
+        if model.dialog != nil { return KeyMap.dialogCommands }
         return KeyMap.commands
     }
 
@@ -79,8 +76,9 @@ final class RootViewController: UIViewController {
     }
 
     /// Esc und Enter kommen nicht zuverlaessig als Tastaturbefehl an, daher direkt ueber den Tastencode.
+    /// Bei offenem Dialog (ohne Textfeld) schliessen bzw. bestaetigen sie ihn.
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        guard presentedViewController == nil, !model.blocksKeys else {
+        guard presentedViewController == nil, model.sheet == nil else {
             super.pressesBegan(presses, with: event)
             return
         }
@@ -106,12 +104,20 @@ final class RootViewController: UIViewController {
 enum KeyMap {
     static let commands: [UIKeyCommand] = build()
 
+    /// Waehrend ein Dialog offen ist: nur Cmd+. (wie Esc).
+    static let dialogCommands: [UIKeyCommand] = {
+        let c = UIKeyCommand(title: "Abbrechen", action: #selector(RootViewController.keyPressed(_:)), input: ".", modifierFlags: [.command])
+        c.wantsPriorityOverSystemBehavior = true
+        return [c]
+    }()
+
     private static func build() -> [UIKeyCommand] {
         let sel = #selector(RootViewController.keyPressed(_:))
         var list: [UIKeyCommand] = []
-        func add(_ input: String, _ flags: UIKeyModifierFlags, _ title: String) {
+        func add(_ input: String, _ flags: UIKeyModifierFlags, _ title: String, hidden: Bool = false) {
             let c = UIKeyCommand(title: title, action: sel, input: input, modifierFlags: flags)
             c.wantsPriorityOverSystemBehavior = true
+            if hidden { c.attributes = .hidden }
             list.append(c)
         }
         add(UIKeyCommand.inputUpArrow, [], "Cursor hoch")
@@ -145,6 +151,24 @@ enum KeyMap {
         add(UIKeyCommand.f9, [], "Teilen")
         add(UIKeyCommand.f9, [.alternate], "Entpacken")
         add(UIKeyCommand.f10, [], "Einstellungen")
+
+        // Ersatz fuer Tastaturen ohne F-Tasten (z. B. Apple Magic Keyboard): Cmd+1 ... Cmd+0 = F1 ... F10
+        let titles = ["Hilfe", "Umbenennen", "Ansehen", "Bearbeiten", "Kopieren", "Verschieben",
+                      "Neuer Ordner", "Löschen", "Teilen", "Einstellungen"]
+        for (i, d) in AppModel.digits.enumerated() {
+            add(d, [.command], "\(titles[i]) (F\(i + 1))")
+        }
+        add("1", [.command, .alternate], "Ort links wechseln")
+        add("2", [.command, .alternate], "Ort rechts wechseln")
+        add("5", [.command, .alternate], "Packen")
+        add("7", [.command, .alternate], "Suchen")
+        add("9", [.command, .alternate], "Entpacken")
+        add(".", [.command], "Abbrechen / Markierung aufheben")
+        add("+", [.command], "Schrift größer")
+        add("+", [.command, .shift], "Schrift größer", hidden: true)
+        add("=", [.command], "Schrift größer", hidden: true)
+        add("-", [.command], "Schrift kleiner")
+
         add("u", [.control], "Fenster tauschen")
         add("r", [.control], "Neu einlesen")
         add("h", [.control], "Versteckte Dateien")

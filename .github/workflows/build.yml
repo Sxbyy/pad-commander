@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
     runs-on: macos-15
-    timeout-minutes: 80
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -33,11 +33,17 @@ jobs:
           fi
           git rev-parse HEAD > "$RUNNER_TEMP/built_sha"
 
-      - name: Werkzeuge
+      - name: Werkzeuge und Version
         run: |
           brew install xcodegen
-          xcodebuild -version | tee "$RUNNER_TEMP/info.log"
-          xcodegen --version | tee -a "$RUNNER_TEMP/info.log"
+          VERSION=$(sed -nE 's/^ *MARKETING_VERSION: *"?([0-9.]+)"?.*/\1/p' project.yml | head -1)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "BUILD=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+          {
+            xcodebuild -version
+            xcodegen --version
+            echo "Pad Commander $VERSION (Build $GITHUB_RUN_NUMBER)"
+          } | tee "$RUNNER_TEMP/info.log"
 
       - name: Projekt erzeugen
         run: |
@@ -50,6 +56,7 @@ jobs:
           set +e
           xcodebuild -quiet -project PadCommander.xcodeproj -scheme PadCommander -configuration Release \
             -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build > "$RUNNER_TEMP/build.log" 2>&1
           rc=$?
           set -e
@@ -59,6 +66,31 @@ jobs:
           cp -R build/Build/Products/Release-iphoneos/PadCommander.app out/Payload/
           (cd out && zip -qry PadCommander.ipa Payload)
           ls -la out
+
+      # Dieselben Quellen als Paket fuer die App „Swift Playground“ (direkt auf dem iPad starten, ohne PC)
+      - name: Swift-Playground-Paket
+        id: playground
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          L="$RUNNER_TEMP/playground.log"
+          python3 scripts/make_playground.py out/pg "$VERSION" "$BUILD" > "$L" 2>&1
+          (cd out/pg && zip -qry ../PadCommander.swiftpm.zip PadCommander.swiftpm)
+          cp -R out/pg/PadCommander.swiftpm "$RUNNER_TEMP/pgcheck"
+          cd "$RUNNER_TEMP/pgcheck"
+          set +e
+          xcodebuild -list > "$RUNNER_TEMP/pg-list.txt" 2>&1
+          cat "$RUNNER_TEMP/pg-list.txt" >> "$L"
+          SCHEME=$(sed -n '/Schemes:/,$p' "$RUNNER_TEMP/pg-list.txt" | sed '1d' | sed -E 's/^ +//' | grep -i 'pad' | head -1)
+          echo "Schema: '$SCHEME'" | tee -a "$L"
+          xcodebuild -quiet -scheme "$SCHEME" -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/pg-build" CODE_SIGNING_ALLOWED=NO build >> "$L" 2>&1
+          rc=$?
+          set -e
+          grep -E "error:" "$L" | sort -u | head -80 || true
+          tail -25 "$L"
+          if [ $rc -ne 0 ]; then rm -f "$GITHUB_WORKSPACE/out/PadCommander.swiftpm.zip"; exit $rc; fi
+          ls -la "$GITHUB_WORKSPACE/out"
 
       - name: UI-Test im iPad-Simulator
         id: test
@@ -78,19 +110,42 @@ jobs:
             -destination "platform=iOS Simulator,id=$UDID" -derivedDataPath build-sim \
             -resultBundlePath "$RUNNER_TEMP/test.xcresult" > "$RUNNER_TEMP/test-full.log" 2>&1
           rc=$?
-          grep -E "error:|Test Case|Test Suite|\st = |Assertion|failed|Failed|crash|Crash|Executed" "$RUNNER_TEMP/test-full.log" | grep -v "warning:" > "$RUNNER_TEMP/test.log" || true
+          grep -E "error:|Test Case|Test Suite|\st = |Assertion|failed|Failed|crash|Crash|Executed|ZUORDNUNG|TASTE|ESC-FELD" "$RUNNER_TEMP/test-full.log" | grep -v "warning:" > "$RUNNER_TEMP/test.log" || true
           tail -60 "$RUNNER_TEMP/test.log"
           exit $rc
 
-      - name: Release (IPA)
+      - name: Release (IPA, Playground, SideStore-Quelle)
         if: steps.build.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           SHA=$(cat "$RUNNER_TEMP/built_sha")
+          cp PadCommander/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png out/icon.png
+          sips -Z 512 out/icon.png >/dev/null 2>&1 || true
+          i=1
+          for s in 01-start 13-nacht 14-hochkant-nacht 15-hochkant-klassisch; do
+            if [ -f "$RUNNER_TEMP/shots/$s.png" ]; then
+              cp "$RUNNER_TEMP/shots/$s.png" "out/screen-$i.png"
+              sips -Z 1600 "out/screen-$i.png" >/dev/null 2>&1 || true
+              i=$((i + 1))
+            fi
+          done
+          python3 scripts/make_source.py out/source.json "$VERSION" "$BUILD" out/PadCommander.ipa out
+          ASSETS=(out/PadCommander.ipa out/source.json out/icon.png)
+          PG="fehlt in diesem Build (siehe ci-results/playground.log)"
+          if [ -f out/PadCommander.swiftpm.zip ]; then ASSETS+=(out/PadCommander.swiftpm.zip); PG="PadCommander.swiftpm.zip"; fi
+          for f in out/screen-*.png; do if [ -f "$f" ]; then ASSETS+=("$f"); fi; done
+          NOTES=$(cat <<EOF
+          Version $VERSION (Build $BUILD), gebaut aus ${SHA:0:7} am $(TZ=Europe/Berlin date '+%d.%m.%Y %H:%M'). UI-Test im iPad-Simulator: ${{ steps.test.outcome }}.
+
+          **Installieren** (ausführlich im README):
+          1. **Direkt auf dem iPad, ohne PC:** $PG in der kostenlosen App „Swift Playground“ öffnen und ▶ antippen.
+          2. **SideStore:** Quelle https://github.com/Sxbyy/pad-commander/releases/download/latest/source.json hinzufügen.
+          3. **Sideloadly am PC:** PadCommander.ipa mit kostenloser Apple-ID aufspielen (alle 7 Tage erneuern).
+          EOF
+          )
           gh release delete latest --yes --cleanup-tag || true
-          NOTES="Gebaut aus ${SHA:0:7} am $(TZ=Europe/Berlin date '+%d.%m.%Y %H:%M'). UI-Test: ${{ steps.test.outcome }}. Installation: siehe README (Sideloadly + kostenlose Apple-ID)."
-          gh release create latest out/PadCommander.ipa --title "Pad Commander (neuester Stand)" --notes "$NOTES" --target "$SHA" --latest
+          gh release create latest "${ASSETS[@]}" --title "Pad Commander $VERSION (Build $BUILD)" --notes "$NOTES" --target "$SHA" --latest
 
       - name: Ergebnisse veröffentlichen
         if: always()
@@ -102,12 +157,14 @@ jobs:
           {
             echo "built=$(cat "$RUNNER_TEMP/built_sha" 2>/dev/null || echo "$GITHUB_SHA")"
             echo "run=$GITHUB_RUN_ID"
+            echo "version=${VERSION:-?} (${BUILD:-?})"
             echo "edits=${{ steps.edits.outcome }}"
             echo "build=${{ steps.build.outcome }}"
+            echo "playground=${{ steps.playground.outcome }}"
             echo "test=${{ steps.test.outcome }}"
             date -u +"time=%Y-%m-%dT%H:%M:%SZ"
           } > "$R/status.txt"
-          for f in edits.log info.log build.log test.log sim.txt; do
+          for f in edits.log info.log build.log playground.log test.log sim.txt; do
             if [ -f "$RUNNER_TEMP/$f" ]; then cp "$RUNNER_TEMP/$f" "$R/"; fi
           done
           if [ -f "$RUNNER_TEMP/test-full.log" ]; then gzip -c "$RUNNER_TEMP/test-full.log" > "$R/test-full.log.gz"; fi
@@ -115,6 +172,7 @@ jobs:
           if [ -d "$RUNNER_TEMP/test.xcresult" ]; then
             xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/test.xcresult" > "$R/test-summary.json" 2>&1 || true
             xcrun xcresulttool get test-results test-details --test-id "PadCommanderUITests/testRundgang()" --path "$RUNNER_TEMP/test.xcresult" > "$R/test-details.json" 2>&1 || true
+            xcrun xcresulttool get test-results test-details --test-id "PadCommanderUITests/testTastenZuordnung()" --path "$RUNNER_TEMP/test.xcresult" > "$R/test-details-keys.json" 2>&1 || true
             if ! ls "$RUNNER_TEMP/shots"/*.png >/dev/null 2>&1; then
               xcrun xcresulttool export attachments --path "$RUNNER_TEMP/test.xcresult" --output-path "$RUNNER_TEMP/shots" || true
             fi
