@@ -1,0 +1,792 @@
+2026-11-09 16:30:01.855412+0000 PadCommanderUITests-Runner[11002:37727] [General] Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+2026-11-09 16:30:01.899436+0000 PadCommanderUITests-Runner[11002:37727] [General] Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'All tests' started at 2026-11-09 16:30:11.141.
+Test Suite 'PadCommanderUITests.xctest' started at 2026-11-09 16:30:11.143.
+Test Suite 'PadCommanderUITests' started at 2026-11-09 16:30:11.143.
+Test Case '-[PadCommanderUITests.PadCommanderUITests testRundgang]' started.
+    t =     0.00s Start Test at 2026-11-09 16:30:11.144
+    t =     0.95s Set Up
+    t =     0.96s     Setting device orientation to Landscape Left
+    t =     1.02s         Device orientation changed to Landscape Left
+    t =     1.58s         Interface orientation changed to Landscape Right
+    t =     2.57s         Wait for com.apple.DocumentManager.DockFolderViewService to idle
+    t =     2.81s         Wait for com.apple.springboard to idle
+    t =     2.98s     Open de.sxbyy.padcommander
+    t =     2.98s         Launch de.sxbyy.padcommander
+    t =    12.84s             Setting up automation session
+    t =    15.44s             Wait for de.sxbyy.padcommander to idle
+    t =    20.05s Waiting 20.0s for "row-L-Bilder" Any to exist
+    t =    21.08s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Bilder" Any`
+    t =    21.08s         Checking existence of `"row-L-Bilder" Any`
+    t =    23.28s Added attachment named '01-start'
+    t =    23.29s Waiting 8.0s for "row-L-Bilder" Any to exist
+    t =    24.31s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Bilder" Any`
+    t =    24.31s         Checking existence of `"row-L-Bilder" Any`
+    t =    24.97s Double tap "row-L-Bilder" Any
+    t =    24.97s     Wait for de.sxbyy.padcommander to idle
+    t =    24.97s     Find the "row-L-Bilder" Any
+    t =    25.56s     Check for interrupting elements affecting "row-L-Bilder" StaticText
+    t =    25.73s         Wait for com.apple.springboard to idle
+    t =    25.84s     Synthesize event
+    t =    26.37s     Wait for de.sxbyy.padcommander to idle
+    t =    26.37s Waiting 8.0s for "row-L-Berge.png" Any to exist
+    t =    27.42s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Berge.png" Any`
+    t =    27.42s         Checking existence of `"row-L-Berge.png" Any`
+    t =    29.13s Added attachment named '02-bilder'
+    t =    29.13s Waiting 8.0s for "row-L-Berge.png" Any to exist
+    t =    30.18s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Berge.png" Any`
+    t =    30.18s         Checking existence of `"row-L-Berge.png" Any`
+    t =    30.70s Tap "row-L-Berge.png" Any[0.00, 0.50] -> (16.0, 0.0)
+    t =    30.70s     Wait for de.sxbyy.padcommander to idle
+    t =    30.70s     Find the "row-L-Berge.png" Any
+    t =    31.12s     Check for interrupting elements affecting "row-L-Berge.png" StaticText
+    t =    31.20s         Wait for com.apple.springboard to idle
+    t =    31.29s     Synthesize event
+    t =    31.29s         Find the "row-L-Berge.png" StaticText
+    t =    31.68s         Find the "row-L-Berge.png" StaticText
+    t =    32.26s         Find the "row-L-Berge.png" StaticText
+    t =    33.22s     Wait for de.sxbyy.padcommander to idle
+    t =    33.22s Waiting 8.0s for "row-L-Wiese.png" Any to exist
+    t =    34.30s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Wiese.png" Any`
+    t =    34.30s         Checking existence of `"row-L-Wiese.png" Any`
+    t =    34.86s Tap "row-L-Wiese.png" Any[0.00, 0.50] -> (16.0, 0.0)
+    t =    34.86s     Wait for de.sxbyy.padcommander to idle
+    t =    34.86s     Find the "row-L-Wiese.png" Any
+    t =    35.28s     Check for interrupting elements affecting "row-L-Wiese.png" StaticText
+    t =    35.37s         Wait for com.apple.springboard to idle
+    t =    35.46s     Synthesize event
+    t =    35.46s         Find the "row-L-Wiese.png" StaticText
+    t =    36.35s         Find the "row-L-Wiese.png" StaticText
+    t =    37.02s         Find the "row-L-Wiese.png" StaticText
+    t =    37.75s     Wait for de.sxbyy.padcommander to idle
+    t =    39.10s Added attachment named '03-markiert'
+    t =    39.10s Waiting 8.0s for "fkey-F5" Any to exist
+    t =    40.17s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F5" Any`
+    t =    40.18s         Checking existence of `"fkey-F5" Any`
+    t =    40.52s Tap "fkey-F5" Any
+    t =    40.52s     Wait for de.sxbyy.padcommander to idle
+    t =    40.52s     Find the "fkey-F5" Any
+    t =    40.76s     Check for interrupting elements affecting "fkey-F5" Button
+    t =    40.87s         Wait for com.apple.springboard to idle
+    t =    40.92s     Synthesize event
+    t =    41.22s     Wait for de.sxbyy.padcommander to idle
+    t =    44.26s Waiting 8.0s for "dialog-ok" Any to exist
+    t =    45.32s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-ok" Any`
+    t =    45.32s         Checking existence of `"dialog-ok" Any`
+    t =    52.53s         Capturing element debug description
+    t =    52.54s     Checking existence of `"dialog-ok" Any`
+    t =    61.03s Added attachment named '04-kopieren-dialog'
+    t =    61.03s Tap "dialog-ok" Any
+    t =    61.03s     Wait for de.sxbyy.padcommander to idle
+    t =    61.04s     Find the "dialog-ok" Any
+    t =    62.10s     Check for interrupting elements affecting "dialog-ok" Button
+    t =    62.27s         Wait for com.apple.springboard to idle
+    t =    62.38s     Synthesize event
+    t =    62.72s     Wait for de.sxbyy.padcommander to idle
+    t =    63.00s Waiting 15.0s for "row-R-Berge.png" Any to exist
+    t =    64.02s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Berge.png" Any`
+    t =    64.02s         Checking existence of `"row-R-Berge.png" Any`
+    t =    65.50s Waiting 8.0s for "row-R-Wiese.png" Any to exist
+    t =    66.51s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Wiese.png" Any`
+    t =    66.51s         Checking existence of `"row-R-Wiese.png" Any`
+    t =    68.68s Added attachment named '05-kopiert'
+    t =    68.69s Waiting 8.0s for "row-R-Bericht.pdf" Any to exist
+    t =    69.71s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bericht.pdf" Any`
+    t =    69.71s         Checking existence of `"row-R-Bericht.pdf" Any`
+    t =    70.19s Tap "row-R-Bericht.pdf" Any
+    t =    70.19s     Wait for de.sxbyy.padcommander to idle
+    t =    70.19s     Find the "row-R-Bericht.pdf" Any
+    t =    70.73s     Check for interrupting elements affecting "row-R-Bericht.pdf" StaticText
+    t =    70.80s         Wait for com.apple.springboard to idle
+    t =    70.85s     Synthesize event
+    t =    71.16s     Wait for de.sxbyy.padcommander to idle
+    t =    71.16s Waiting 8.0s for "fkey-F7" Any to exist
+    t =    72.17s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F7" Any`
+    t =    72.17s         Checking existence of `"fkey-F7" Any`
+    t =    72.35s Tap "fkey-F7" Any
+    t =    72.35s     Wait for de.sxbyy.padcommander to idle
+    t =    72.36s     Find the "fkey-F7" Any
+    t =    72.52s     Check for interrupting elements affecting "fkey-F7" Button
+    t =    72.62s         Wait for com.apple.springboard to idle
+    t =    72.69s     Synthesize event
+    t =    73.03s     Wait for de.sxbyy.padcommander to idle
+    t =    73.84s Waiting 5.0s for "dialog-field" TextField to exist
+    t =    74.90s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-field" TextField`
+    t =    74.90s         Checking existence of `"dialog-field" TextField`
+    t =    75.10s Type 'Testordner' into "dialog-field" TextField
+    t =    75.10s     Wait for de.sxbyy.padcommander to idle
+    t =    75.10s     Find the "dialog-field" TextField
+    t =    75.25s     Check for interrupting elements affecting "dialog-field" TextField
+    t =    75.43s         Wait for com.apple.springboard to idle
+    t =    75.48s     Synthesize event
+    t =    75.88s     Wait for de.sxbyy.padcommander to idle
+    t =    75.88s Tap "dialog-ok" Any
+    t =    75.88s     Wait for de.sxbyy.padcommander to idle
+    t =    75.88s     Find the "dialog-ok" Any
+    t =    76.59s     Check for interrupting elements affecting "dialog-ok" Button
+    t =    76.70s         Wait for com.apple.springboard to idle
+    t =    76.76s     Synthesize event
+    t =    77.06s     Wait for de.sxbyy.padcommander to idle
+    t =    77.07s Waiting 8.0s for "row-R-Testordner" Any to exist
+    t =    78.08s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Testordner" Any`
+    t =    78.08s         Checking existence of `"row-R-Testordner" Any`
+    t =    81.22s Added attachment named '06-neuer-ordner'
+    t =    81.22s Waiting 8.0s for "row-R-Notizen.txt" Any to exist
+    t =    82.26s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Notizen.txt" Any`
+    t =    82.26s         Checking existence of `"row-R-Notizen.txt" Any`
+    t =    83.91s Tap "row-R-Notizen.txt" Any
+    t =    83.91s     Wait for de.sxbyy.padcommander to idle
+    t =    83.92s     Find the "row-R-Notizen.txt" Any
+    t =    85.42s     Check for interrupting elements affecting "row-R-Notizen.txt" StaticText
+    t =    85.58s         Wait for com.apple.springboard to idle
+    t =    85.80s     Synthesize event
+    t =    86.15s     Wait for de.sxbyy.padcommander to idle
+    t =    86.15s Waiting 8.0s for "fkey-F4" Any to exist
+    t =    87.17s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F4" Any`
+    t =    87.17s         Checking existence of `"fkey-F4" Any`
+    t =    88.92s Tap "fkey-F4" Any
+    t =    88.92s     Wait for de.sxbyy.padcommander to idle
+    t =    88.93s     Find the "fkey-F4" Any
+    t =    89.43s     Check for interrupting elements affecting "fkey-F4" Button
+    t =    89.55s         Wait for com.apple.springboard to idle
+    t =    89.68s     Synthesize event
+    t =    90.01s     Wait for de.sxbyy.padcommander to idle
+    t =    90.44s Waiting 8.0s for "editor-close" Any to exist
+    t =    91.49s     Checking `Expect predicate `existsNoRetry == 1` for object "editor-close" Any`
+    t =    91.49s         Checking existence of `"editor-close" Any`
+    t =    94.79s Added attachment named '07-editor'
+    t =    94.80s Tap "editor-close" Any
+    t =    94.80s     Wait for de.sxbyy.padcommander to idle
+    t =    94.80s     Find the "editor-close" Any
+    t =    95.38s     Check for interrupting elements affecting "editor-close" Other
+    t =    95.52s         Wait for com.apple.springboard to idle
+    t =    95.60s     Synthesize event
+    t =    95.94s     Wait for de.sxbyy.padcommander to idle
+    t =    97.45s Waiting 8.0s for "row-R-Bericht.pdf" Any to exist
+    t =    98.48s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bericht.pdf" Any`
+    t =    98.48s         Checking existence of `"row-R-Bericht.pdf" Any`
+    t =    99.03s Tap "row-R-Bericht.pdf" Any
+    t =    99.03s     Wait for de.sxbyy.padcommander to idle
+    t =    99.03s     Find the "row-R-Bericht.pdf" Any
+    t =    99.58s     Check for interrupting elements affecting "row-R-Bericht.pdf" StaticText
+    t =    99.67s         Wait for com.apple.springboard to idle
+    t =    99.73s     Synthesize event
+    t =   100.03s     Wait for de.sxbyy.padcommander to idle
+    t =   100.04s Waiting 8.0s for "fkey-F3" Any to exist
+    t =   101.05s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F3" Any`
+    t =   101.05s         Checking existence of `"fkey-F3" Any`
+    t =   101.20s Tap "fkey-F3" Any
+    t =   101.20s     Wait for de.sxbyy.padcommander to idle
+    t =   101.21s     Find the "fkey-F3" Any
+    t =   101.34s     Check for interrupting elements affecting "fkey-F3" Button
+    t =   101.42s         Wait for com.apple.springboard to idle
+    t =   101.46s     Synthesize event
+    t =   101.76s     Wait for de.sxbyy.padcommander to idle
+    t =   108.53s Added attachment named '08-vorschau'
+    t =   108.54s Waiting 3.0s for "Done" Button to exist
+    t =   109.54s     Checking `Expect predicate `existsNoRetry == 1` for object "Done" Button`
+    t =   109.55s         Checking existence of `"Done" Button`
+    t =   111.22s Tap "Done" Button
+    t =   111.22s     Wait for de.sxbyy.padcommander to idle
+    t =   111.23s     Find the "Done" Button
+    t =   111.42s     Check for interrupting elements affecting "QLOverlayDoneButtonAccessibilityIdentifier" Button
+    t =   111.52s         Wait for com.apple.springboard to idle
+    t =   111.57s     Synthesize event
+    t =   111.89s     Wait for de.sxbyy.padcommander to idle
+    t =   116.18s Added attachment named '08b-zurueck'
+    t =   116.18s Waiting 8.0s for "row-R-Testordner" Any to exist
+    t =   117.22s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Testordner" Any`
+    t =   117.22s         Checking existence of `"row-R-Testordner" Any`
+    t =   118.39s Tap "row-R-Testordner" Any
+    t =   118.39s     Wait for de.sxbyy.padcommander to idle
+    t =   118.40s     Find the "row-R-Testordner" Any
+    t =   119.64s     Check for interrupting elements affecting "row-R-Testordner" StaticText
+    t =   119.81s         Wait for com.apple.springboard to idle
+    t =   119.95s     Synthesize event
+    t =   120.27s     Wait for de.sxbyy.padcommander to idle
+    t =   120.28s Waiting 8.0s for "fkey-F8" Any to exist
+    t =   121.30s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F8" Any`
+    t =   121.30s         Checking existence of `"fkey-F8" Any`
+    t =   121.90s Tap "fkey-F8" Any
+    t =   121.90s     Wait for de.sxbyy.padcommander to idle
+    t =   121.91s     Find the "fkey-F8" Any
+    t =   122.39s     Check for interrupting elements affecting "fkey-F8" Button
+    t =   122.54s         Wait for com.apple.springboard to idle
+    t =   122.62s     Synthesize event
+    t =   122.93s     Wait for de.sxbyy.padcommander to idle
+    t =   122.96s Waiting 8.0s for "dialog-ok" Any to exist
+    t =   123.97s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-ok" Any`
+    t =   123.97s         Checking existence of `"dialog-ok" Any`
+    t =   125.80s Added attachment named '09-loeschen'
+    t =   125.80s Tap "dialog-ok" Any
+    t =   125.80s     Wait for de.sxbyy.padcommander to idle
+    t =   125.81s     Find the "dialog-ok" Any
+    t =   126.16s     Check for interrupting elements affecting "dialog-ok" Button
+    t =   126.33s         Wait for com.apple.springboard to idle
+    t =   126.43s     Synthesize event
+    t =   126.76s     Wait for de.sxbyy.padcommander to idle
+    t =   128.80s Checking existence of `"row-R-Testordner" Any`
+    t =   129.93s Waiting 8.0s for "row-L-Sonnenuntergang.png" Any to exist
+    t =   130.98s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Sonnenuntergang.png" Any`
+    t =   130.98s         Checking existence of `"row-L-Sonnenuntergang.png" Any`
+    t =   131.87s Tap "row-L-Sonnenuntergang.png" Any
+    t =   131.87s     Wait for de.sxbyy.padcommander to idle
+    t =   131.88s     Find the "row-L-Sonnenuntergang.png" Any
+    t =   132.62s     Check for interrupting elements affecting "row-L-Sonnenuntergang.png" StaticText
+    t =   132.75s         Wait for com.apple.springboard to idle
+    t =   132.84s     Synthesize event
+    t =   133.17s     Wait for de.sxbyy.padcommander to idle
+    t =   133.18s Waiting 8.0s for "tool-markall" Any to exist
+    t =   134.23s     Checking `Expect predicate `existsNoRetry == 1` for object "tool-markall" Any`
+    t =   134.23s         Checking existence of `"tool-markall" Any`
+    t =   134.90s Tap "tool-markall" Any
+    t =   134.90s     Wait for de.sxbyy.padcommander to idle
+    t =   134.91s     Find the "tool-markall" Any
+    t =   135.97s     Check for interrupting elements affecting "tool-markall" Button
+    t =   136.11s         Wait for com.apple.springboard to idle
+    t =   136.24s     Synthesize event
+    t =   136.58s     Wait for de.sxbyy.padcommander to idle
+    t =   136.60s Waiting 8.0s for "tool-pack" Any to exist
+    t =   137.62s     Checking `Expect predicate `existsNoRetry == 1` for object "tool-pack" Any`
+    t =   137.62s         Checking existence of `"tool-pack" Any`
+    t =   138.89s Tap "tool-pack" Any
+    t =   138.89s     Wait for de.sxbyy.padcommander to idle
+    t =   138.90s     Find the "tool-pack" Any
+    t =   139.76s     Check for interrupting elements affecting "tool-pack" Button
+    t =   139.88s         Wait for com.apple.springboard to idle
+    t =   139.98s     Synthesize event
+    t =   140.31s     Wait for de.sxbyy.padcommander to idle
+    t =   140.77s Waiting 8.0s for "dialog-ok" Any to exist
+    t =   141.82s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-ok" Any`
+    t =   141.82s         Checking existence of `"dialog-ok" Any`
+    t =   144.79s Added attachment named '10-packen'
+    t =   144.79s Tap "dialog-ok" Any
+    t =   144.79s     Wait for de.sxbyy.padcommander to idle
+    t =   144.80s     Find the "dialog-ok" Any
+    t =   145.94s     Check for interrupting elements affecting "dialog-ok" Button
+    t =   146.11s         Wait for com.apple.springboard to idle
+    t =   146.23s     Synthesize event
+    t =   146.54s     Wait for de.sxbyy.padcommander to idle
+    t =   146.59s Waiting 15.0s for "row-R-Bilder.zip" Any to exist
+    t =   147.64s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bilder.zip" Any`
+    t =   147.65s         Checking existence of `"row-R-Bilder.zip" Any`
+    t =   148.53s Waiting 8.0s for "row-R-Bilder.zip" Any to exist
+    t =   149.57s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bilder.zip" Any`
+    t =   149.57s         Checking existence of `"row-R-Bilder.zip" Any`
+    t =   150.88s Double tap "row-R-Bilder.zip" Any
+    t =   150.88s     Wait for de.sxbyy.padcommander to idle
+    t =   150.88s     Find the "row-R-Bilder.zip" Any
+    t =   152.23s     Check for interrupting elements affecting "row-R-Bilder.zip" StaticText
+    t =   152.35s         Wait for com.apple.springboard to idle
+    t =   152.48s     Synthesize event
+    t =   152.82s     Wait for de.sxbyy.padcommander to idle
+    t =   152.83s Waiting 8.0s for "dialog-ok" Any to exist
+    t =   153.83s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-ok" Any`
+    t =   153.83s         Checking existence of `"dialog-ok" Any`
+    t =   153.99s Tap "dialog-ok" Any
+    t =   154.00s     Wait for de.sxbyy.padcommander to idle
+    t =   154.00s     Find the "dialog-ok" Any
+    t =   154.18s     Check for interrupting elements affecting "dialog-ok" Button
+    t =   154.25s         Wait for com.apple.springboard to idle
+    t =   154.29s     Synthesize event
+    t =   154.58s     Wait for de.sxbyy.padcommander to idle
+    t =   154.58s Waiting 15.0s for "row-R-Bilder" Any to exist
+    t =   155.59s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bilder" Any`
+    t =   155.59s         Checking existence of `"row-R-Bilder" Any`
+    t =   157.35s Added attachment named '11-entpackt'
+    t =   157.35s Waiting 8.0s for "row-R-Bilder" Any to exist
+    t =   158.37s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Bilder" Any`
+    t =   158.37s         Checking existence of `"row-R-Bilder" Any`
+    t =   158.75s Double tap "row-R-Bilder" Any
+    t =   158.75s     Wait for de.sxbyy.padcommander to idle
+    t =   158.75s     Find the "row-R-Bilder" Any
+    t =   159.22s     Check for interrupting elements affecting "row-R-Bilder" StaticText
+    t =   159.32s         Wait for com.apple.springboard to idle
+    t =   159.41s     Synthesize event
+    t =   159.75s     Wait for de.sxbyy.padcommander to idle
+    t =   159.75s Waiting 8.0s for "row-R-Berge.png" Any to exist
+    t =   160.77s     Checking `Expect predicate `existsNoRetry == 1` for object "row-R-Berge.png" Any`
+    t =   160.77s         Checking existence of `"row-R-Berge.png" Any`
+    t =   162.86s Added attachment named '12-entpackt-inhalt'
+    t =   162.86s Waiting 8.0s for "tool-theme" Any to exist
+    t =   163.88s     Checking `Expect predicate `existsNoRetry == 1` for object "tool-theme" Any`
+    t =   163.88s         Checking existence of `"tool-theme" Any`
+    t =   164.32s Tap "tool-theme" Any
+    t =   164.32s     Wait for de.sxbyy.padcommander to idle
+    t =   164.33s     Find the "tool-theme" Any
+    t =   164.76s     Check for interrupting elements affecting "tool-theme" Button
+    t =   164.83s         Wait for com.apple.springboard to idle
+    t =   164.90s     Synthesize event
+    t =   165.20s     Wait for de.sxbyy.padcommander to idle
+    t =   166.57s Added attachment named '13-nacht'
+    t =   166.58s Setting device orientation to Portrait
+    t =   166.59s     Device orientation changed to Portrait
+    t =   166.90s     Interface orientation changed to Portrait
+    t =   168.27s     Wait for de.sxbyy.padcommander to idle
+    t =   168.35s     Wait for com.apple.springboard to idle
+    t =   170.83s Added attachment named '14-hochkant-nacht'
+    t =   170.83s Waiting 8.0s for "tool-theme" Any to exist
+    t =   171.88s     Checking `Expect predicate `existsNoRetry == 1` for object "tool-theme" Any`
+    t =   171.88s         Checking existence of `"tool-theme" Any`
+    t =   172.40s Tap "tool-theme" Any
+    t =   172.40s     Wait for de.sxbyy.padcommander to idle
+    t =   172.40s     Find the "tool-theme" Any
+    t =   173.66s     Check for interrupting elements affecting "tool-theme" Button
+    t =   173.90s         Wait for com.apple.springboard to idle
+    t =   174.12s     Synthesize event
+    t =   174.44s     Wait for de.sxbyy.padcommander to idle
+    t =   175.99s Added attachment named '15-hochkant-klassisch'
+    t =   175.99s Setting device orientation to Landscape Left
+    t =   176.00s     Device orientation changed to Landscape Left
+    t =   176.24s     Interface orientation changed to Landscape Right
+    t =   176.59s     Wait for de.sxbyy.padcommander to idle
+    t =   177.02s     Wait for com.apple.springboard to idle
+    t =   178.11s Waiting 8.0s for "tool-search" Any to exist
+    t =   179.18s     Checking `Expect predicate `existsNoRetry == 1` for object "tool-search" Any`
+    t =   179.18s         Checking existence of `"tool-search" Any`
+    t =   179.53s Tap "tool-search" Any
+    t =   179.53s     Wait for de.sxbyy.padcommander to idle
+    t =   179.53s     Find the "tool-search" Any
+    t =   180.09s     Check for interrupting elements affecting "tool-search" Button
+    t =   180.19s         Wait for com.apple.springboard to idle
+    t =   180.27s     Synthesize event
+    t =   180.57s     Wait for de.sxbyy.padcommander to idle
+    t =   181.21s Waiting 8.0s for "search-start" Any to exist
+    t =   182.27s     Checking `Expect predicate `existsNoRetry == 1` for object "search-start" Any`
+    t =   182.27s         Checking existence of `"search-start" Any`
+    t =   183.57s Tap "search-start" Any
+    t =   183.57s     Wait for de.sxbyy.padcommander to idle
+    t =   183.58s     Find the "search-start" Any
+    t =   184.85s     Check for interrupting elements affecting "search-start" Button
+    t =   184.96s         Wait for com.apple.springboard to idle
+    t =   185.07s     Synthesize event
+    t =   185.38s     Wait for de.sxbyy.padcommander to idle
+    t =   189.05s Added attachment named '16-suche'
+    t =   189.05s Tap "Schließen" Button
+    t =   189.05s     Wait for de.sxbyy.padcommander to idle
+    t =   189.05s     Find the "Schließen" Button
+    t =   189.49s     Check for interrupting elements affecting "Schließen" Button
+    t =   189.71s         Wait for com.apple.springboard to idle
+    t =   189.76s     Synthesize event
+    t =   190.11s     Wait for de.sxbyy.padcommander to idle
+    t =   193.89s Added attachment named '17-vor-tastatur'
+    t =   193.91s Type '⇥' key (XCUIKeyboardKeyTab) with no modifiers
+    t =   193.91s     Wait for de.sxbyy.padcommander to idle
+    t =   193.91s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   193.98s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   194.05s         Wait for com.apple.springboard to idle
+    t =   194.08s     Synthesize event
+    t =   194.68s     Wait for de.sxbyy.padcommander to idle
+    t =   195.77s Find the "lastkey" Any
+TASTE[Tab] -> Tasten: Tab 
+    t =   197.34s Added attachment named '17b-nach-tab'
+    t =   197.35s Type '↓' key (XCUIKeyboardKeyDownArrow) with no modifiers
+    t =   197.35s     Wait for de.sxbyy.padcommander to idle
+    t =   197.35s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   197.41s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   197.48s         Wait for com.apple.springboard to idle
+    t =   197.50s     Synthesize event
+    t =   197.87s     Wait for de.sxbyy.padcommander to idle
+    t =   198.88s Find the "lastkey" Any
+TASTE[Down] -> Tasten: Tab Down 
+    t =   199.13s Type ' ' key (XCUIKeyboardKeySpace) with no modifiers
+    t =   199.13s     Wait for de.sxbyy.padcommander to idle
+    t =   199.13s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   199.18s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   199.27s         Wait for com.apple.springboard to idle
+    t =   199.30s     Synthesize event
+    t =   199.65s     Wait for de.sxbyy.padcommander to idle
+    t =   200.71s Find the "lastkey" Any
+TASTE[Space] -> Tasten: Tab Down Space 
+    t =   202.20s Added attachment named '18-tastatur-markiert'
+    t =   202.20s Type 'u' key with modifiers '⌃' (0x04)
+    t =   202.20s     Wait for de.sxbyy.padcommander to idle
+    t =   202.21s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   202.27s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   202.33s         Wait for com.apple.springboard to idle
+    t =   202.37s     Synthesize event
+    t =   202.72s     Wait for de.sxbyy.padcommander to idle
+    t =   203.77s Find the "lastkey" Any
+TASTE[Ctrl+U] -> Tasten: Tab Down Space Ctrl+u 
+    t =   205.34s Added attachment named '19-tastatur-getauscht'
+    t =   205.34s Type '⎋' key (XCUIKeyboardKeyEscape) with no modifiers
+    t =   205.34s     Wait for de.sxbyy.padcommander to idle
+    t =   205.34s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   205.42s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   205.47s         Wait for com.apple.springboard to idle
+    t =   205.50s     Synthesize event
+    t =   205.74s     Wait for de.sxbyy.padcommander to idle
+    t =   206.79s Find the "lastkey" Any
+TASTE[Esc] -> Tasten: Tab Down Space Ctrl+u 
+    t =   207.19s Type '↩' key (XCUIKeyboardKeyReturn) with no modifiers
+    t =   207.19s     Wait for de.sxbyy.padcommander to idle
+    t =   207.19s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   207.25s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   207.42s         Wait for com.apple.springboard to idle
+    t =   207.45s     Synthesize event
+    t =   207.67s     Wait for de.sxbyy.padcommander to idle
+    t =   208.71s Find the "lastkey" Any
+TASTE[Enter] -> Tasten: Tab Down Space Ctrl+u 
+    t =   210.23s Added attachment named '20-tastatur-enter'
+    t =   210.23s Type '7' key with modifiers '⌘' (0x10)
+    t =   210.23s     Wait for de.sxbyy.padcommander to idle
+    t =   210.23s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   210.30s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   210.40s         Wait for com.apple.springboard to idle
+    t =   210.44s     Synthesize event
+    t =   210.99s     Wait for de.sxbyy.padcommander to idle
+    t =   212.85s Find the "lastkey" Any
+TASTE[Cmd+7] -> Tasten: Tab Down Space Ctrl+u F7 
+    t =   214.37s Waiting 5.0s for "dialog-field" TextField to exist
+    t =   215.39s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-field" TextField`
+    t =   215.40s         Checking existence of `"dialog-field" TextField`
+    t =   216.89s Added attachment named '20b-cmd7-neuer-ordner'
+    t =   216.89s Type '.' key with modifiers '⌘' (0x10)
+    t =   216.90s     Wait for de.sxbyy.padcommander to idle
+    t =   216.90s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   216.99s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   217.10s         Wait for com.apple.springboard to idle
+    t =   217.15s     Synthesize event
+    t =   217.54s     Wait for de.sxbyy.padcommander to idle
+    t =   218.90s Find the "lastkey" Any
+TASTE[Cmd+.] -> Tasten: Tab Down Space Ctrl+u F7 
+    t =   220.14s Checking existence of `"dialog-field" TextField`
+    t =   220.25s Type '=' key with modifiers '⌘' (0x10)
+    t =   220.25s     Wait for de.sxbyy.padcommander to idle
+    t =   220.26s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   220.33s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   220.45s         Wait for com.apple.springboard to idle
+    t =   220.50s     Synthesize event
+    t =   220.93s     Wait for de.sxbyy.padcommander to idle
+    t =   221.98s Find the "lastkey" Any
+TASTE[Cmd+=] -> Tasten: Tab Down Space Ctrl+u F7 Cmd+= 
+    t =   223.66s Added attachment named '20c-schrift-gross'
+    t =   223.67s Type '-' key with modifiers '⌘' (0x10)
+    t =   223.67s     Wait for de.sxbyy.padcommander to idle
+    t =   223.67s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   223.78s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   223.86s         Wait for com.apple.springboard to idle
+    t =   223.91s     Synthesize event
+    t =   224.34s     Wait for de.sxbyy.padcommander to idle
+    t =   225.38s Find the "lastkey" Any
+TASTE[Cmd+-] -> Tasten: Tab Down Space Ctrl+u F7 Cmd+= Cmd+- 
+    t =   225.59s Waiting 8.0s for "fkey-F7" Any to exist
+    t =   226.63s     Checking `Expect predicate `existsNoRetry == 1` for object "fkey-F7" Any`
+    t =   226.64s         Checking existence of `"fkey-F7" Any`
+    t =   227.00s Tap "fkey-F7" Any
+    t =   227.00s     Wait for de.sxbyy.padcommander to idle
+    t =   227.01s     Find the "fkey-F7" Any
+    t =   227.44s     Check for interrupting elements affecting "fkey-F7" Button
+    t =   227.63s         Wait for com.apple.springboard to idle
+    t =   227.79s     Synthesize event
+    t =   228.20s     Wait for de.sxbyy.padcommander to idle
+    t =   229.34s Waiting 5.0s for "dialog-field" TextField to exist
+    t =   230.36s     Checking `Expect predicate `existsNoRetry == 1` for object "dialog-field" TextField`
+    t =   230.36s         Checking existence of `"dialog-field" TextField`
+    t =   230.54s Type '⎋' key (XCUIKeyboardKeyEscape) with no modifiers
+    t =   230.54s     Wait for de.sxbyy.padcommander to idle
+    t =   230.57s     Find the Target Application 'de.sxbyy.padcommander'
+    t =   230.68s     Check for interrupting elements affecting "Pad Commander" Application
+    t =   230.87s         Wait for com.apple.springboard to idle
+    t =   230.92s     Synthesize event
+    t =   231.17s     Wait for de.sxbyy.padcommander to idle
+    t =   232.75s Find the "lastkey" Any
+TASTE[Esc im Feld] -> Tasten: Tab Down Space Ctrl+u F7 Cmd+= Cmd+- 
+    t =   234.17s Checking existence of `"dialog-field" TextField`
+ESC-FELD geschlossen: false
+    t =   234.39s Checking existence of `"dialog-cancel" Any`
+    t =   235.60s Find the "dialog-cancel" Any
+    t =   238.06s Added attachment named '21-tastatur-ende'
+    t =   238.07s Tear Down
+Test Case '-[PadCommanderUITests.PadCommanderUITests testRundgang]' passed (238.835 seconds).
+Test Case '-[PadCommanderUITests.PadCommanderUITests testTastenZuordnung]' started.
+    t =     0.00s Start Test at 2026-11-09 16:34:09.983
+    t =     0.17s Set Up
+    t =     0.17s     Setting device orientation to Landscape Left
+    t =     0.19s         Wait for de.sxbyy.padcommander to idle
+    t =     0.19s         Wait for com.apple.springboard to idle
+    t =     0.20s     Open de.sxbyy.padcommander
+    t =     0.20s         Launch de.sxbyy.padcommander
+    t =     0.20s             Terminate de.sxbyy.padcommander:11814
+    t =    27.74s             Setting up automation session
+    t =    31.97s             Wait for de.sxbyy.padcommander to idle
+    t =    34.95s Terminate de.sxbyy.padcommander:18976
+    t =    35.98s Open de.sxbyy.padcommander
+    t =    35.99s     Launch de.sxbyy.padcommander
+    t =    37.67s         Setting up automation session
+    t =    39.78s         Wait for de.sxbyy.padcommander to idle
+    t =    42.11s Waiting 20.0s for "row-L-Bilder" Any to exist
+    t =    43.14s     Checking `Expect predicate `existsNoRetry == 1` for object "row-L-Bilder" Any`
+    t =    43.14s         Checking existence of `"row-L-Bilder" Any`
+    t =    46.06s Find the "lastkey" Any
+    t =    46.54s Type 'F1' key (XCUIKeyboardKeyF1) with no modifiers
+    t =    46.54s     Wait for de.sxbyy.padcommander to idle
+    t =    46.54s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    46.70s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    46.86s         Wait for com.apple.springboard to idle
+    t =    46.91s     Synthesize event
+    t =    47.16s     Wait for de.sxbyy.padcommander to idle
+    t =    47.69s Find the "lastkey" Any
+ZUORDNUNG F1 -> 
+    t =    48.16s Type 'F2' key (XCUIKeyboardKeyF2) with no modifiers
+    t =    48.16s     Wait for de.sxbyy.padcommander to idle
+    t =    48.17s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    48.26s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    48.32s         Wait for com.apple.springboard to idle
+    t =    48.34s     Synthesize event
+    t =    48.70s     Wait for de.sxbyy.padcommander to idle
+    t =    49.22s Find the "lastkey" Any
+ZUORDNUNG F2 -> F1 
+    t =    49.79s Type 'F3' key (XCUIKeyboardKeyF3) with no modifiers
+    t =    49.79s     Wait for de.sxbyy.padcommander to idle
+    t =    49.80s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    49.96s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    50.28s         Wait for com.apple.springboard to idle
+    t =    50.31s     Synthesize event
+    t =    50.76s     Wait for de.sxbyy.padcommander to idle
+    t =    51.20s Find the "lastkey" Any
+ZUORDNUNG F3 -> F2 
+    t =    51.96s Type 'F4' key (XCUIKeyboardKeyF4) with no modifiers
+    t =    51.96s     Wait for de.sxbyy.padcommander to idle
+    t =    51.97s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    52.10s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    52.20s         Wait for com.apple.springboard to idle
+    t =    52.23s     Synthesize event
+    t =    52.60s     Wait for de.sxbyy.padcommander to idle
+    t =    53.04s Find the "lastkey" Any
+ZUORDNUNG F4 -> F3 
+    t =    53.56s Type 'F5' key (XCUIKeyboardKeyF5) with no modifiers
+    t =    53.56s     Wait for de.sxbyy.padcommander to idle
+    t =    53.56s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    53.64s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    53.74s         Wait for com.apple.springboard to idle
+    t =    53.78s     Synthesize event
+    t =    54.14s     Wait for de.sxbyy.padcommander to idle
+    t =    54.57s Find the "lastkey" Any
+ZUORDNUNG F5 -> F4 
+    t =    54.81s Type 'F6' key (XCUIKeyboardKeyF6) with no modifiers
+    t =    54.81s     Wait for de.sxbyy.padcommander to idle
+    t =    54.82s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    54.89s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    55.00s         Wait for com.apple.springboard to idle
+    t =    55.05s     Synthesize event
+    t =    55.42s     Wait for de.sxbyy.padcommander to idle
+    t =    55.84s Find the "lastkey" Any
+ZUORDNUNG F6 -> F5 
+    t =    56.03s Type 'F7' key (XCUIKeyboardKeyF7) with no modifiers
+    t =    56.03s     Wait for de.sxbyy.padcommander to idle
+    t =    56.03s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    56.12s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    56.20s         Wait for com.apple.springboard to idle
+    t =    56.24s     Synthesize event
+    t =    56.59s     Wait for de.sxbyy.padcommander to idle
+    t =    57.01s Find the "lastkey" Any
+ZUORDNUNG F7 -> F6 
+    t =    57.24s Type 'F8' key (XCUIKeyboardKeyF8) with no modifiers
+    t =    57.24s     Wait for de.sxbyy.padcommander to idle
+    t =    57.24s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    57.33s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    57.42s         Wait for com.apple.springboard to idle
+    t =    57.46s     Synthesize event
+    t =    57.81s     Wait for de.sxbyy.padcommander to idle
+    t =    58.22s Find the "lastkey" Any
+ZUORDNUNG F8 -> F7 
+    t =    58.48s Type 'F9' key (XCUIKeyboardKeyF9) with no modifiers
+    t =    58.48s     Wait for de.sxbyy.padcommander to idle
+    t =    58.48s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    58.56s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    58.65s         Wait for com.apple.springboard to idle
+    t =    58.69s     Synthesize event
+    t =    59.04s     Wait for de.sxbyy.padcommander to idle
+    t =    59.45s Find the "lastkey" Any
+ZUORDNUNG F9 -> F8 
+    t =    59.73s Type 'F10' key (XCUIKeyboardKeyF10) with no modifiers
+    t =    59.73s     Wait for de.sxbyy.padcommander to idle
+    t =    59.73s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    59.82s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    59.88s         Wait for com.apple.springboard to idle
+    t =    59.95s     Synthesize event
+    t =    60.32s     Wait for de.sxbyy.padcommander to idle
+    t =    60.76s Find the "lastkey" Any
+ZUORDNUNG F10 -> F9 
+    t =    61.11s Type '⇥' key (XCUIKeyboardKeyTab) with no modifiers
+    t =    61.11s     Wait for de.sxbyy.padcommander to idle
+    t =    61.13s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    61.22s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    61.30s         Wait for com.apple.springboard to idle
+    t =    61.34s     Synthesize event
+    t =    61.71s     Wait for de.sxbyy.padcommander to idle
+    t =    62.15s Find the "lastkey" Any
+ZUORDNUNG Tab -> Tab 
+    t =    62.37s Type '↑' key (XCUIKeyboardKeyUpArrow) with no modifiers
+    t =    62.37s     Wait for de.sxbyy.padcommander to idle
+    t =    62.37s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    62.45s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    62.53s         Wait for com.apple.springboard to idle
+    t =    62.58s     Synthesize event
+    t =    62.93s     Wait for de.sxbyy.padcommander to idle
+    t =    63.35s Find the "lastkey" Any
+ZUORDNUNG Up -> Up 
+    t =    63.57s Type '↓' key (XCUIKeyboardKeyDownArrow) with no modifiers
+    t =    63.57s     Wait for de.sxbyy.padcommander to idle
+    t =    63.58s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    63.66s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    63.73s         Wait for com.apple.springboard to idle
+    t =    63.77s     Synthesize event
+    t =    64.12s     Wait for de.sxbyy.padcommander to idle
+    t =    64.54s Find the "lastkey" Any
+ZUORDNUNG Down -> Down 
+    t =    65.03s Type '←' key (XCUIKeyboardKeyLeftArrow) with no modifiers
+    t =    65.04s     Wait for de.sxbyy.padcommander to idle
+    t =    65.04s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    65.13s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    65.23s         Wait for com.apple.springboard to idle
+    t =    65.26s     Synthesize event
+    t =    65.61s     Wait for de.sxbyy.padcommander to idle
+    t =    66.06s Find the "lastkey" Any
+ZUORDNUNG Left -> Left 
+    t =    66.71s Type '→' key (XCUIKeyboardKeyRightArrow) with no modifiers
+    t =    66.71s     Wait for de.sxbyy.padcommander to idle
+    t =    66.72s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    66.83s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    66.98s         Wait for com.apple.springboard to idle
+    t =    67.02s     Synthesize event
+    t =    67.41s     Wait for de.sxbyy.padcommander to idle
+    t =    67.87s Find the "lastkey" Any
+ZUORDNUNG Right -> Right 
+    t =    68.63s Type '⎋' key (XCUIKeyboardKeyEscape) with no modifiers
+    t =    68.63s     Wait for de.sxbyy.padcommander to idle
+    t =    68.63s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    68.74s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    68.88s         Wait for com.apple.springboard to idle
+    t =    68.93s     Synthesize event
+    t =    69.16s     Wait for de.sxbyy.padcommander to idle
+    t =    69.62s Find the "lastkey" Any
+ZUORDNUNG Esc -> 
+    t =    70.14s Type ' ' key (XCUIKeyboardKeySpace) with no modifiers
+    t =    70.14s     Wait for de.sxbyy.padcommander to idle
+    t =    70.17s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    70.26s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    70.43s         Wait for com.apple.springboard to idle
+    t =    70.45s     Synthesize event
+    t =    70.83s     Wait for de.sxbyy.padcommander to idle
+    t =    71.26s Find the "lastkey" Any
+ZUORDNUNG Space -> Space 
+    t =    72.17s Type '↩' key (XCUIKeyboardKeyReturn) with no modifiers
+    t =    72.17s     Wait for de.sxbyy.padcommander to idle
+    t =    72.18s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    72.27s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    72.41s         Wait for com.apple.springboard to idle
+    t =    72.44s     Synthesize event
+    t =    72.70s     Wait for de.sxbyy.padcommander to idle
+    t =    73.11s Find the "lastkey" Any
+ZUORDNUNG Enter -> 
+    t =    73.39s Type 'u' key with modifiers '⌃' (0x04)
+    t =    73.39s     Wait for de.sxbyy.padcommander to idle
+    t =    73.40s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    73.45s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    73.55s         Wait for com.apple.springboard to idle
+    t =    73.59s     Synthesize event
+    t =    73.94s     Wait for de.sxbyy.padcommander to idle
+    t =    74.38s Find the "lastkey" Any
+ZUORDNUNG Ctrl+U -> Ctrl+u 
+    t =    74.68s Find the "lastkey" Any
+    t =    75.09s Type 'F7' key (XCUIKeyboardKeyF7) with modifiers '⌥' (0x08)
+    t =    75.09s     Wait for de.sxbyy.padcommander to idle
+    t =    75.09s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    75.19s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    75.32s         Wait for com.apple.springboard to idle
+    t =    75.37s     Synthesize event
+    t =    75.75s     Wait for de.sxbyy.padcommander to idle
+    t =    76.19s Find the "lastkey" Any
+ZUORDNUNG Alt+F7 -> 
+    t =    76.52s Find the "lastkey" Any
+    t =    76.79s Type '1' key with modifiers '⌘' (0x10)
+    t =    76.79s     Wait for de.sxbyy.padcommander to idle
+    t =    76.80s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    76.88s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    76.95s         Wait for com.apple.springboard to idle
+    t =    76.99s     Synthesize event
+    t =    77.34s     Wait for de.sxbyy.padcommander to idle
+    t =    77.79s Type '2' key with modifiers '⌘' (0x10)
+    t =    77.79s     Wait for de.sxbyy.padcommander to idle
+    t =    77.79s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    77.89s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    78.02s         Wait for com.apple.springboard to idle
+    t =    78.06s     Synthesize event
+    t =    78.43s     Wait for de.sxbyy.padcommander to idle
+    t =    78.88s Type '3' key with modifiers '⌘' (0x10)
+    t =    78.88s     Wait for de.sxbyy.padcommander to idle
+    t =    78.89s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    78.98s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    79.04s         Wait for com.apple.springboard to idle
+    t =    79.07s     Synthesize event
+    t =    79.43s     Wait for de.sxbyy.padcommander to idle
+    t =    79.88s Type '4' key with modifiers '⌘' (0x10)
+    t =    79.88s     Wait for de.sxbyy.padcommander to idle
+    t =    79.89s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    80.01s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    80.09s         Wait for com.apple.springboard to idle
+    t =    80.13s     Synthesize event
+    t =    80.49s     Wait for de.sxbyy.padcommander to idle
+    t =    80.95s Type '5' key with modifiers '⌘' (0x10)
+    t =    80.95s     Wait for de.sxbyy.padcommander to idle
+    t =    80.96s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    81.05s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    81.14s         Wait for com.apple.springboard to idle
+    t =    81.17s     Synthesize event
+    t =    81.52s     Wait for de.sxbyy.padcommander to idle
+    t =    81.96s Type '6' key with modifiers '⌘' (0x10)
+    t =    81.96s     Wait for de.sxbyy.padcommander to idle
+    t =    81.96s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    82.04s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    82.14s         Wait for com.apple.springboard to idle
+    t =    82.18s     Synthesize event
+    t =    82.55s     Wait for de.sxbyy.padcommander to idle
+    t =    82.96s Type '7' key with modifiers '⌘' (0x10)
+    t =    82.96s     Wait for de.sxbyy.padcommander to idle
+    t =    82.97s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    83.05s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    83.15s         Wait for com.apple.springboard to idle
+    t =    83.18s     Synthesize event
+    t =    83.53s     Wait for de.sxbyy.padcommander to idle
+    t =    83.97s Type '8' key with modifiers '⌘' (0x10)
+    t =    83.97s     Wait for de.sxbyy.padcommander to idle
+    t =    83.98s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    84.05s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    84.15s         Wait for com.apple.springboard to idle
+    t =    84.18s     Synthesize event
+    t =    84.54s     Wait for de.sxbyy.padcommander to idle
+    t =    84.96s Type '9' key with modifiers '⌘' (0x10)
+    t =    84.96s     Wait for de.sxbyy.padcommander to idle
+    t =    84.97s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    85.09s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    85.16s         Wait for com.apple.springboard to idle
+    t =    85.21s     Synthesize event
+    t =    85.57s     Wait for de.sxbyy.padcommander to idle
+    t =    86.03s Type '0' key with modifiers '⌘' (0x10)
+    t =    86.03s     Wait for de.sxbyy.padcommander to idle
+    t =    86.04s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    86.14s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    86.27s         Wait for com.apple.springboard to idle
+    t =    86.32s     Synthesize event
+    t =    86.67s     Wait for de.sxbyy.padcommander to idle
+    t =    87.12s Type '.' key with modifiers '⌘' (0x10)
+    t =    87.12s     Wait for de.sxbyy.padcommander to idle
+    t =    87.13s     Find the Target Application 'de.sxbyy.padcommander'
+    t =    87.20s     Check for interrupting elements affecting "Pad Commander" Application
+    t =    87.33s         Wait for com.apple.springboard to idle
+    t =    87.38s     Synthesize event
+    t =    87.73s     Wait for de.sxbyy.padcommander to idle
+    t =    88.17s Find the "lastkey" Any
+ZUORDNUNG Cmd+Ziffern -> F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 Esc
+    t =    90.02s Added attachment named '30-tastenzuordnung'
+    t =    90.02s Tear Down
+Test Case '-[PadCommanderUITests.PadCommanderUITests testTastenZuordnung]' passed (90.406 seconds).
+Test Suite 'PadCommanderUITests' passed at 2026-11-09 16:35:40.388.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 329.241 (329.244) seconds
+Test Suite 'PadCommanderUITests.xctest' passed at 2026-11-09 16:35:40.390.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 329.241 (329.246) seconds
+Test Suite 'All tests' passed at 2026-11-09 16:35:40.390.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 329.241 (329.249) seconds

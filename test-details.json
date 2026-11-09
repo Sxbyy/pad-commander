@@ -1,0 +1,50 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "697390A7-516F-4E42-BC81-BAE7B3D9899F",
+      "deviceName" : "iPad Air 13-inch (M3)",
+      "modelName" : "iPad Air 13-inch (M3)",
+      "osBuildNumber" : "23C54",
+      "osVersion" : "26.2",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "duration" : "Ran for 3 minutes, 58 seconds",
+  "durationInSeconds" : 238.8350009918213,
+  "hasMediaAttachments" : true,
+  "hasPerformanceMetrics" : false,
+  "startTime" : 1794241811.144,
+  "testDescription" : "Test case with 1 run",
+  "testIdentifier" : "PadCommanderUITests/testRundgang()",
+  "testIdentifierURL" : "test://com.apple.xcode/PadCommander/PadCommanderUITests/PadCommanderUITests/testRundgang",
+  "testName" : "testRundgang()",
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ],
+  "testResult" : "Passed",
+  "testRuns" : [
+    {
+      "children" : [
+        {
+          "duration" : "3m 58s",
+          "durationInSeconds" : 238.8350009918213,
+          "name" : "Test Scheme Action",
+          "nodeIdentifier" : "1",
+          "nodeType" : "Test Plan Configuration",
+          "result" : "Passed"
+        }
+      ],
+      "details" : "iOS Simulator 26.2",
+      "duration" : "3m 58s",
+      "durationInSeconds" : 238.8350009918213,
+      "name" : "iPad Air 13-inch (M3)",
+      "nodeIdentifier" : "697390A7-516F-4E42-BC81-BAE7B3D9899F",
+      "nodeType" : "Device",
+      "result" : "Passed"
+    }
+  ]
+}

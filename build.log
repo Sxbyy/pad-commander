@@ -1,0 +1,26 @@
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/UI/Bridges.swift:85:10: warning: main actor-isolated instance method 'previewControllerDidDismiss' cannot be used to satisfy nonisolated requirement from protocol 'QLPreviewControllerDelegate'; this is an error in the Swift 6 language mode
+    func previewControllerDidDismiss(_ controller: QLPreviewController) {
+         ^
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/UI/Bridges.swift:85:10: note: add 'nonisolated' to 'previewControllerDidDismiss' to make this instance method not isolated to the actor
+    func previewControllerDidDismiss(_ controller: QLPreviewController) {
+         ^
+    nonisolated 
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/UI/Bridges.swift:66:64: note: add '@preconcurrency' to the 'QLPreviewControllerDelegate' conformance to defer isolation checking to run time
+final class QLSource: NSObject, QLPreviewControllerDataSource, QLPreviewControllerDelegate {
+                                                               ^
+                                                               @preconcurrency 
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/UI/Bridges.swift:81:10: warning: main actor-isolated instance method 'previewController(_:editingModeFor:)' cannot be used to satisfy nonisolated requirement from protocol 'QLPreviewControllerDelegate'; this is an error in the Swift 6 language mode
+    func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
+         ^
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/UI/Bridges.swift:81:10: note: add 'nonisolated' to 'previewController(_:editingModeFor:)' to make this instance method not isolated to the actor
+    func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
+         ^
+    nonisolated 
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/Model/Incoming.swift:87:21: warning: capture of 'panel' with non-sendable type 'PanelModel' in a '@Sendable' closure
+                    panel.reload(select: ok ? dst.lastPathComponent : nil)
+                    ^
+/Users/runner/work/pad-commander/pad-commander/PadCommander/Sources/Model/PanelModel.swift:12:13: note: class 'PanelModel' does not conform to the 'Sendable' protocol
+final class PanelModel {
+            ^
+note: Using codesigning identity override: 
+note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-O, expected -Onone (in target 'PadCommander' from project 'PadCommander')
