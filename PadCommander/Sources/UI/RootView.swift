@@ -79,7 +79,7 @@ struct CaptionBar: View {
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(t.classic ? Color.white : t.accent2)
             if t.classic {
-                Text("Pad Commander 1.0 – \(where_)")
+                Text("Pad Commander \(AppInfo.version) – \(where_)")
                     .font(t.font(15, weight: .bold))
                     .foregroundStyle(t.captionText)
             } else {
@@ -181,6 +181,9 @@ struct MenuBar: View {
                 }
                 Divider()
                 Toggle("Versteckte Dateien (Strg+H)", isOn: Binding(get: { m.showHidden }, set: { m.setShowHidden($0) }))
+                Picker("Schriftgröße (⌘+ / ⌘-)", selection: Binding(get: { m.textSize }, set: { m.setTextSize($0) })) {
+                    ForEach(TextSize.allCases) { s in Text(s.title).tag(s) }
+                }
                 Picker("Design", selection: Binding(get: { m.themeKind }, set: { m.setTheme($0) })) {
                     ForEach(ThemeKind.allCases) { k in Text(k.title).tag(k) }
                 }
@@ -190,7 +193,10 @@ struct MenuBar: View {
                 Button("Ort hinzufügen …", systemImage: "externaldrive.badge.plus") { m.addLocationFromPicker() }
             }
             menu("Hilfe") {
-                Button("Tasten und Gesten (F1)", systemImage: "keyboard") { m.sheet = .help }
+                Button("Tasten und Gesten (F1 / ⌘1)", systemImage: "keyboard") { m.sheet = .help }
+                Button("Über Pad Commander", systemImage: "info.circle") {
+                    m.showMessage("Über Pad Commander", AppInfo.aboutText)
+                }
             }
             Spacer()
         }

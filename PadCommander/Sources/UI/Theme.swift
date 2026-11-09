@@ -43,16 +43,18 @@ struct Theme {
     let rowHeight: CGFloat
     let fontSize: CGFloat
     let fontDesign: Font.Design
+    /// Faktor aus der Einstellung Schriftgroesse (Klein / Normal / Gross).
+    var scale: CGFloat = 1
 
     func font(_ size: CGFloat? = nil, weight: Font.Weight = .regular) -> Font {
-        .system(size: size ?? fontSize, weight: weight, design: fontDesign)
+        .system(size: size.map { $0 * scale } ?? fontSize, weight: weight, design: fontDesign)
     }
 
     var captionGradient: LinearGradient {
         LinearGradient(colors: [captionStart, captionEnd], startPoint: .leading, endPoint: .trailing)
     }
 
-    static func make(_ k: ThemeKind) -> Theme {
+    static func make(_ k: ThemeKind, scale s: CGFloat = 1) -> Theme {
         switch k {
         case .classic:
             return Theme(kind: k,
@@ -66,7 +68,7 @@ struct Theme {
                          pathInactiveBg: Color(hex: 0x808080), pathInactiveText: Color(hex: 0xDFDFDF),
                          folder: Color(hex: 0xE8B923), accent: Color(hex: 0x000080), accent2: Color(hex: 0x1084D0),
                          headerBg: Color(hex: 0xC0C0C0),
-                         radius: 0, rowHeight: 30, fontSize: 15, fontDesign: .default)
+                         radius: 0, rowHeight: (30 * s).rounded(), fontSize: 15 * s, fontDesign: .default, scale: s)
         case .nacht:
             return Theme(kind: k,
                          face: Color(hex: 0x0B0E14), faceText: Color(hex: 0xE6E9F2),
@@ -79,7 +81,7 @@ struct Theme {
                          pathInactiveBg: Color.white.opacity(0.04), pathInactiveText: Color(hex: 0x8A93A6),
                          folder: Color(hex: 0x4CC9F0), accent: Color(hex: 0x8B7BFF), accent2: Color(hex: 0x4CC9F0),
                          headerBg: Color.white.opacity(0.03),
-                         radius: 16, rowHeight: 34, fontSize: 15, fontDesign: .rounded)
+                         radius: 16, rowHeight: (34 * s).rounded(), fontSize: 15 * s, fontDesign: .rounded, scale: s)
         }
     }
 }

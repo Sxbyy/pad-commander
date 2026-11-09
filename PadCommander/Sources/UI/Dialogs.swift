@@ -183,7 +183,9 @@ final class EscTextField: UITextField {
     override var keyCommands: [UIKeyCommand]? {
         let esc = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(escapePressed))
         esc.wantsPriorityOverSystemBehavior = true
-        return [esc]
+        let dot = UIKeyCommand(input: ".", modifierFlags: .command, action: #selector(escapePressed))
+        dot.wantsPriorityOverSystemBehavior = true
+        return [esc, dot]
     }
 
     @objc func escapePressed() { onEscape?() }
@@ -223,6 +225,7 @@ struct InputDialogView: View {
     }
 
     private func ok() {
+        guard model.dialog != nil else { return }
         let value = text
         model.dialog = nil
         dialog.action(value)
@@ -256,6 +259,7 @@ struct ConfirmDialogView: View {
                 Text(dialog.message).fixedSize(horizontal: false, vertical: true)
             }
             DialogButtons(theme: t, okTitle: dialog.okTitle, destructive: dialog.destructive, ok: {
+                guard model.dialog != nil else { return }
                 model.dialog = nil
                 dialog.action()
             }, cancel: { model.dialog = nil })
@@ -309,6 +313,7 @@ struct TransferDialogView: View {
     }
 
     private func ok() {
+        guard model.dialog != nil else { return }
         var d = dialog
         d.targetText = text
         d.policy = policy

@@ -6,19 +6,42 @@ typealias OpProgress = Progress
 extension AppModel {
     // MARK: Tastatur
 
-    func handleKey(_ input: String, _ rawFlags: UIKeyModifierFlags) {
-        let flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+    /// F1 ... F10 in der Reihenfolge der Ziffern 1 ... 0 (Cmd+Ziffer ersetzt die F-Taste).
+    static let fKeys: [String] = [UIKeyCommand.f1, UIKeyCommand.f2, UIKeyCommand.f3, UIKeyCommand.f4, UIKeyCommand.f5,
+                                  UIKeyCommand.f6, UIKeyCommand.f7, UIKeyCommand.f8, UIKeyCommand.f9, UIKeyCommand.f10]
+    static let digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+
+    func handleKey(_ rawInput: String, _ rawFlags: UIKeyModifierFlags) {
+        var input = rawInput
+        var flags = rawFlags.intersection([.shift, .control, .alternate, .command])
+        // Apple-Tastaturen haben keine F-Tasten und oft kein Esc: Cmd+1 ... Cmd+0 = F1 ... F10, Cmd+. = Esc
+        if flags.contains(.command) {
+            if let i = Self.digits.firstIndex(of: input) {
+                input = Self.fKeys[i]
+                flags.remove(.command)
+            } else if input == "." {
+                input = UIKeyCommand.inputEscape
+                flags.remove(.command)
+            }
+        }
         if isUITest { lastKey += Self.keyName(input, flags) + " " }
         if keyLogOnly { return }
         if busy != nil {
             if input == UIKeyCommand.inputEscape { busy?.cancel?() }
             return
         }
-        guard !blocksKeys else { return }
+        // Dieselbe Enter-/Esc-Taste, die gerade einen Dialog geschlossen hat, nicht noch einmal auswerten
+        if input == "\r" || input == UIKeyCommand.inputEscape, Date().timeIntervalSince(dialogClosedAt) < 0.35 { return }
+        if let d = dialog {
+            dialogKey(input, d)
+            return
+        }
+        guard sheet == nil else { return }
         let p = active
         let shift = flags.contains(.shift)
         let alt = flags.contains(.alternate)
         let ctrl = flags.contains(.control)
+        let cmd = flags.contains(.command)
         switch input {
         case UIKeyCommand.inputUpArrow: p.moveCursor(by: -1)
         case UIKeyCommand.inputDownArrow: p.moveCursor(by: 1)
@@ -66,8 +89,27 @@ extension AppModel {
         case "e" where ctrl: sameDirInOther()
         case "+" where ctrl: markGroup(select: true)
         case "-" where ctrl: markGroup(select: false)
+        case "+" where cmd, "=" where cmd: stepTextSize(1)
+        case "-" where cmd: stepTextSize(-1)
         default:
             break
+        }
+    }
+
+    /// Enter / Esc, solange ein eigener Dialog offen ist und kein Textfeld die Taste bekommt.
+    private func dialogKey(_ input: String, _ d: Dialog) {
+        let esc = input == UIKeyCommand.inputEscape
+        guard esc || input == "\r" else { return }
+        switch d {
+        case .confirm(let c):
+            dialog = nil
+            if !esc { c.action() }
+        case .message, .properties:
+            dialog = nil
+        case .conflict(let c):
+            if esc { c.resolve(.cancel) }
+        case .input, .transfer:
+            if esc { dialog = nil }
         }
     }
 

@@ -70,6 +70,15 @@ final class PadCommanderUITests: XCTestCase {
         app.typeKey(.F7, modifierFlags: .option)
         usleep(400_000)
         print("ZUORDNUNG Alt+F7 -> " + String(el("lastkey").label.dropFirst(before.count)))
+        // Cmd+1 ... Cmd+0 und Cmd+. muessen genau F1 ... F10 und Esc ergeben
+        before = el("lastkey").label
+        for d in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."] {
+            app.typeKey(d, modifierFlags: .command)
+            usleep(400_000)
+        }
+        let cmdResult = String(el("lastkey").label.dropFirst(before.count)).trimmingCharacters(in: .whitespaces)
+        print("ZUORDNUNG Cmd+Ziffern -> " + cmdResult)
+        XCTAssertEqual(cmdResult, "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 Esc")
         shot("30-tastenzuordnung")
     }
 
@@ -184,6 +193,17 @@ final class PadCommanderUITests: XCTestCase {
         key(.escape, [], "Esc")
         key(.return, [], "Enter")
         shot("20-tastatur-enter")
+        // Cmd+Ziffer statt F-Taste (kommt im Simulator unverfaelscht an)
+        key(XCUIKeyboardKey(rawValue: "7"), .command, "Cmd+7")
+        XCTAssertTrue(app.textFields["dialog-field"].waitForExistence(timeout: 5), "Cmd+7 hat keinen Ordner-Dialog geöffnet")
+        shot("20b-cmd7-neuer-ordner")
+        key(XCUIKeyboardKey(rawValue: "."), .command, "Cmd+.")
+        sleep(1)
+        XCTAssertFalse(app.textFields["dialog-field"].exists, "Cmd+. hat den Dialog nicht geschlossen")
+        // Schriftgroesse
+        key(XCUIKeyboardKey(rawValue: "="), .command, "Cmd+=")
+        shot("20c-schrift-gross")
+        key(XCUIKeyboardKey(rawValue: "-"), .command, "Cmd+-")
         // Esc im Textfeld eines Dialogs
         wait("fkey-F7").tap()
         XCTAssertTrue(app.textFields["dialog-field"].waitForExistence(timeout: 5))

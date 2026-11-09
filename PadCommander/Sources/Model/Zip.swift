@@ -234,6 +234,7 @@ final class ZipJob: @unchecked Sendable {
     func run() throws {
         let fm = FileManager()
         let items = collect()
+        if items.count > 0xFFFF { throw OpError("Mehr als 65.535 Einträge lassen sich (noch) nicht in ein Archiv packen.") }
         let total = max(1, sources.reduce(Int64(0)) { $0 + FileOps.size(of: $1) })
         if total > Int64(UInt32.max) - 1 { throw OpError("Mehr als 4 GB lassen sich (noch) nicht packen.") }
         guard fm.createFile(atPath: output.path, contents: nil) else { throw OpError("Das Archiv kann nicht angelegt werden.") }
@@ -352,22 +353,32 @@ extension FileOps {
 extension AppModel {
     /// Entpackt in einen Unterordner (Name des Archivs) im angegebenen Fenster.
     func unpack(_ item: FileItem, into panel: PanelModel) {
-        guard let dir = panel.dir else { return }
-        let folder = FileOps.uniqueURL(dir.appendingPathComponent(item.baseName, isDirectory: true))
-        let job = UnzipJob(archive: item.url, target: folder)
-        run(title: "Entpacken", cancel: { job.cancel() }, select: folder.lastPathComponent, in: panel) { [weak self] in
-            job.report = { pr in Task { @MainActor in self?.busy?.progress = pr } }
-            try await Task.detached {
-                try FileOps.coordinatedRead(item.url) { _ in try job.run() }
-            }.value
+        unpack([item], into: panel)
+    }
+
+    /// Mehrere Archive nacheinander entpacken, jedes in einen eigenen Unterordner.
+    func unpack(_ items: [FileItem], into panel: PanelModel) {
+        guard let dir = panel.dir, !items.isEmpty else { return }
+        let jobs: [(URL, UnzipJob)] = items.map { item in
+            (item.url, UnzipJob(archive: item.url, target: FileOps.uniqueURL(dir.appendingPathComponent(item.baseName, isDirectory: true))))
+        }
+        let select = jobs.last?.1.target.lastPathComponent
+        run(title: "Entpacken", cancel: { jobs.forEach { $0.1.cancel() } }, select: select, in: panel) { [weak self] in
+            for (archive, job) in jobs {
+                job.report = { pr in Task { @MainActor in self?.busy?.progress = pr } }
+                try await Task.detached {
+                    try FileOps.coordinatedRead(archive) { _ in try job.run() }
+                }.value
+            }
         }
     }
 
     /// Alt+F9: markierte ZIP-Archive ins andere Fenster entpacken.
     func unpackSelection() {
         let zips = active.selection.filter { $0.isZip }
-        guard let first = zips.first else { flash("Kein ZIP-Archiv ausgewählt"); return }
-        unpack(first, into: inactive)
+        guard !zips.isEmpty else { flash("Kein ZIP-Archiv ausgewählt"); return }
+        unpack(zips, into: inactive)
+        active.unmarkAll()
     }
 
     /// Alt+F5: Auswahl ins andere Fenster packen.

@@ -87,6 +87,26 @@ enum ThemeKind: String, CaseIterable, Codable, Identifiable {
     var title: String { self == .classic ? "Klassisch" : "Nacht" }
 }
 
+/// Schriftgroesse der Oberflaeche (Einstellungen, Cmd+Plus / Cmd+Minus).
+enum TextSize: String, CaseIterable, Codable, Identifiable {
+    case klein, normal, gross
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .klein: return "Klein"
+        case .normal: return "Normal"
+        case .gross: return "Groß"
+        }
+    }
+    var factor: CGFloat {
+        switch self {
+        case .klein: return 0.88
+        case .normal: return 1
+        case .gross: return 1.2
+        }
+    }
+}
+
 private struct PanelState: Codable {
     var locationID: String
     var components: [String]
@@ -108,7 +128,17 @@ final class AppModel {
     var themeKind: ThemeKind = .classic
     var showHidden = false
     var confirmDelete = true
-    var dialog: Dialog?
+    var textSize: TextSize = .normal
+    /// Offener eigener Dialog. Beim Schliessen wird die Zeit gemerkt, damit dieselbe Enter-/Esc-Taste
+    /// nicht gleich noch im Hauptfenster wirkt.
+    var dialog: Dialog? {
+        get { currentDialog }
+        set {
+            if newValue == nil && currentDialog != nil { dialogClosedAt = Date() }
+            currentDialog = newValue
+        }
+    }
+    private(set) var currentDialog: Dialog?
     var sheet: SheetKind?
     var busy: BusyState?
     /// Kurze Meldung unten in der Statusleiste.
@@ -121,6 +151,8 @@ final class AppModel {
     @ObservationIgnored var dragSources: [URL] = []
     @ObservationIgnored var dragSide: Side = .left
     @ObservationIgnored var dragTime = Date.distantPast
+    @ObservationIgnored var dragNames: Set<String> = []
+    @ObservationIgnored var dialogClosedAt = Date.distantPast
     @ObservationIgnored private let defaults = UserDefaults.standard
     @ObservationIgnored private var toastTask: Task<Void, Never>?
     let isUITest = CommandLine.arguments.contains("-uitest")
@@ -132,7 +164,7 @@ final class AppModel {
         right = PanelModel(side: .right, location: .iPad)
         if isUITest {
             DemoData.reset()
-            for k in ["locations", "panel.left", "panel.right", "theme", "showHidden", "activeSide"] { defaults.removeObject(forKey: k) }
+            for k in ["locations", "panel.left", "panel.right", "theme", "textSize", "showHidden", "activeSide"] { defaults.removeObject(forKey: k) }
         }
         DemoData.ensureWelcome()
         loadSettings()
@@ -149,7 +181,7 @@ final class AppModel {
         restorePanel(right, key: "panel.right", fallback: isUITest ? ["Dokumente"] : [])
     }
 
-    var theme: Theme { Theme.make(themeKind) }
+    var theme: Theme { Theme.make(themeKind, scale: textSize.factor) }
     var active: PanelModel { activeSide == .left ? left : right }
     var inactive: PanelModel { activeSide == .left ? right : left }
     func panel(_ side: Side) -> PanelModel { side == .left ? left : right }
@@ -161,6 +193,7 @@ final class AppModel {
 
     private func loadSettings() {
         if let raw = defaults.string(forKey: "theme"), let t = ThemeKind(rawValue: raw) { themeKind = t }
+        if let raw = defaults.string(forKey: "textSize"), let s = TextSize(rawValue: raw) { textSize = s }
         showHidden = defaults.bool(forKey: "showHidden")
         if defaults.object(forKey: "confirmDelete") != nil { confirmDelete = defaults.bool(forKey: "confirmDelete") }
         if let raw = defaults.string(forKey: "activeSide"), let s = Side(rawValue: raw) { activeSide = s }
@@ -202,6 +235,20 @@ final class AppModel {
         let all = ThemeKind.allCases
         let i = all.firstIndex(of: themeKind) ?? 0
         setTheme(all[(i + 1) % all.count])
+    }
+
+    func setTextSize(_ s: TextSize) {
+        textSize = s
+        defaults.set(s.rawValue, forKey: "textSize")
+    }
+
+    /// Schrift groesser (+1) oder kleiner (-1).
+    func stepTextSize(_ delta: Int) {
+        let all = TextSize.allCases
+        let i = all.firstIndex(of: textSize) ?? 1
+        let n = min(max(i + delta, 0), all.count - 1)
+        setTextSize(all[n])
+        flash("Schriftgröße: " + all[n].title)
     }
 
     func setShowHidden(_ v: Bool) {

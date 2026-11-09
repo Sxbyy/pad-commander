@@ -27,6 +27,7 @@ final class PanelModel {
 
     @ObservationIgnored private var watcher: DispatchSourceFileSystemObject?
     @ObservationIgnored private var watchedFD: Int32 = -1
+    @ObservationIgnored private var pendingReload: DispatchWorkItem?
     @ObservationIgnored var onBookmarkRefresh: ((Location, Data) -> Void)?
     @ObservationIgnored var onChange: (() -> Void)?
 
@@ -250,8 +251,11 @@ final class PanelModel {
         let src = DispatchSource.makeFileSystemObjectSource(fileDescriptor: fd, eventMask: [.write, .delete, .rename], queue: .main)
         src.setEventHandler { [weak self] in
             guard let self else { return }
-            // kurz warten, bis Schreibvorgaenge fertig sind
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in self?.reload() }
+            // kurz warten, bis Schreibvorgaenge fertig sind; viele Ereignisse ergeben nur ein Neueinlesen
+            self.pendingReload?.cancel()
+            let work = DispatchWorkItem { [weak self] in self?.reload() }
+            self.pendingReload = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
         }
         src.setCancelHandler { close(fd) }
         watcher = src

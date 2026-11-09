@@ -211,6 +211,11 @@ struct SettingsView: View {
                         ForEach(ThemeKind.allCases) { k in Text(k.title).tag(k) }
                     }
                     .pickerStyle(.segmented)
+                    Picker("Schriftgröße", selection: Binding(get: { m.textSize }, set: { m.setTextSize($0) })) {
+                        ForEach(TextSize.allCases) { s in Text(s.title).tag(s) }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("textsize")
                     Toggle("Versteckte Dateien anzeigen", isOn: Binding(get: { m.showHidden }, set: { m.setShowHidden($0) }))
                 }
                 Section("Sicherheit") {
@@ -229,10 +234,11 @@ struct SettingsView: View {
                 } header: {
                     Text("Orte (Laufwerksleiste)")
                 } footer: {
-                    Text("„iPad“ ist der eigene Ordner der App (Dateien-App: Auf meinem iPad › Pad Commander). Weitere Orte können iCloud Drive, USB-Sticks, Netzlaufwerke oder Ordner anderer Apps sein. Zum Entfernen nach links wischen.")
+                    Text("„iPad“: " + AppInfo.homeHint + ". Weitere Orte können iCloud Drive, USB-Sticks, Netzlaufwerke oder Ordner anderer Apps sein. Zum Entfernen nach links wischen.")
                 }
                 Section("Über") {
-                    LabeledContent("Version", value: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0")
+                    LabeledContent("Version", value: AppInfo.versionText)
+                    LabeledContent("Läuft als", value: AppInfo.runsAs)
                     Text("Pad Commander ist ein eigenständiger Dateimanager mit zwei Fenstern im Stil der klassischen Commander-Programme. Er ist nicht mit anderen Herstellern verbunden.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -261,6 +267,10 @@ struct HelpView: View {
         ("F7", "Neuer Ordner"), ("F8 / Entf", "Löschen"), ("F9", "Teilen"), ("F10", "Einstellungen"),
         ("Alt+F5", "Packen (ZIP)"), ("Alt+F9", "Entpacken ins andere Fenster"), ("Alt+F7", "Suchen"),
         ("Alt+F1 / Alt+F2", "Ort links / rechts wechseln"), ("Alt+Enter", "Eigenschaften"),
+        ("⌘1 … ⌘0", "Wie F1 … F10 (für Tastaturen ohne F-Tasten)"),
+        ("⌘⌥1 / ⌘⌥2 / ⌘⌥5 / ⌘⌥7 / ⌘⌥9", "Wie Alt+F1 / Alt+F2 / Alt+F5 / Alt+F7 / Alt+F9"),
+        ("⌘.", "Wie Esc: Dialog schließen, Markierung aufheben, Abbrechen"),
+        ("⌘+ / ⌘-", "Schrift größer / kleiner"),
         ("Tab", "Fenster wechseln"), ("↑ ↓ Bild↑ Bild↓ Pos1 Ende", "Cursor bewegen"),
         ("Enter / →", "Öffnen"), ("← / Rücktaste", "Eine Ebene hoch"),
         ("Leertaste", "Markieren (Ordner: Größe berechnen)"), ("Esc", "Markierung aufheben"),
@@ -280,10 +290,14 @@ struct HelpView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Tastatur") {
+                Section {
                     ForEach(keys.indices, id: \.self) { i in
                         LabeledContent(keys[i].0, value: keys[i].1)
                     }
+                } header: {
+                    Text("Tastatur")
+                } footer: {
+                    Text("Apple-Tastaturen haben oft keine F-Tasten und kein Esc: dann ⌘ + Ziffer und ⌘. nehmen. Bei Tastaturen mit F-Tasten muss man je nach Modell zusätzlich fn bzw. die Globus-Taste drücken. Esc lässt sich auch auf die Feststelltaste legen: Einstellungen › Allgemein › Tastatur › Hardwaretastatur › Sondertasten.")
                 }
                 Section("Gesten") {
                     ForEach(gestures.indices, id: \.self) { i in

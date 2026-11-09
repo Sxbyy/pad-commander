@@ -2,17 +2,20 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct Columns {
-    static let ext: CGFloat = 50
-    static let size: CGFloat = 98
-    static let date: CGFloat = 134
+    let ext: CGFloat
+    let size: CGFloat
+    let date: CGFloat
     let showExt: Bool
     let showSize: Bool
     let showDate: Bool
 
-    init(width: CGFloat) {
-        showDate = width > 480
-        showExt = width > 330
-        showSize = width > 250
+    init(width: CGFloat, scale: CGFloat = 1) {
+        ext = (50 * scale).rounded()
+        size = (98 * scale).rounded()
+        date = (134 * scale).rounded()
+        showDate = width > 480 * scale
+        showExt = width > 330 * scale
+        showSize = width > 250 * scale
     }
 }
 
@@ -25,7 +28,7 @@ struct PanelView: View {
         let t = model.theme
         let isActive = model.activeSide == panel.side
         GeometryReader { geo in
-            let cols = Columns(width: geo.size.width)
+            let cols = Columns(width: geo.size.width, scale: t.scale)
             VStack(spacing: t.classic ? 2 : 6) {
                 DriveBar(model: model, panel: panel)
                 PathLine(model: model, panel: panel, active: isActive)
@@ -95,7 +98,7 @@ struct DriveBar: View {
                                     model.removeLocation(loc)
                                 }
                             } else {
-                                Text("In der Dateien-App: Auf meinem iPad › Pad Commander")
+                                Text(AppInfo.homeHint)
                             }
                         }
                         .accessibilityIdentifier("drive-\(panel.side.tag)-\(loc.name)")
@@ -240,9 +243,9 @@ struct HeaderRow: View {
     var body: some View {
         HStack(spacing: 0) {
             head(.name, width: nil, align: .leading)
-            if cols.showExt { head(.ext, width: Columns.ext, align: .leading) }
-            if cols.showSize { head(.size, width: Columns.size, align: .trailing) }
-            if cols.showDate { head(.date, width: Columns.date, align: .trailing) }
+            if cols.showExt { head(.ext, width: cols.ext, align: .leading) }
+            if cols.showSize { head(.size, width: cols.size, align: .trailing) }
+            if cols.showDate { head(.date, width: cols.date, align: .trailing) }
         }
         .padding(model.theme.classic ? 2 : 0)
     }
@@ -328,9 +331,9 @@ struct FileRow: View {
         let iconColor: Color = isMarked ? color : (item.isDirectory && !item.isParent ? t.folder : (filled ? t.cursorText : t.secondaryText))
         HStack(spacing: 6) {
             Image(systemName: isMarked ? "checkmark.circle.fill" : item.symbol)
-                .font(.system(size: 15))
+                .font(.system(size: 15 * t.scale))
                 .foregroundStyle(iconColor)
-                .frame(width: 30, height: t.rowHeight)
+                .frame(width: (30 * t.scale).rounded(), height: t.rowHeight)
                 .contentShape(Rectangle())
                 .onTapGesture { model.toggleMarkByTap(item, in: panel) }
                 .accessibilityIdentifier("mark-\(panel.side.tag)-\(item.name)")
@@ -341,19 +344,19 @@ struct FileRow: View {
             if cols.showExt {
                 Text(item.ext)
                     .lineLimit(1)
-                    .frame(width: Columns.ext, alignment: .leading)
+                    .frame(width: cols.ext, alignment: .leading)
             }
             if cols.showSize {
                 Text(sizeText)
                     .lineLimit(1)
                     .monospacedDigit()
-                    .frame(width: Columns.size, alignment: .trailing)
+                    .frame(width: cols.size, alignment: .trailing)
             }
             if cols.showDate {
                 Text(Format.date(item.modified))
                     .lineLimit(1)
                     .monospacedDigit()
-                    .frame(width: Columns.date, alignment: .trailing)
+                    .frame(width: cols.date, alignment: .trailing)
             }
         }
         .font(t.font())

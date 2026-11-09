@@ -12,6 +12,12 @@ enum DemoData {
         try? welcomeText.data(using: .utf8)?.write(to: url)
     }
 
+    private static var homeLine: String {
+        AppInfo.filesAppVisible
+            ? "Dieser Ordner hier („iPad“) ist in der Dateien-App unter\n„Auf meinem iPad › Pad Commander“ zu finden."
+            : "In Swift Playground ist dieser Ordner („iPad“) nicht in der Dateien-App\nsichtbar – hol dir deine Ordner einfach über „+“ dazu."
+    }
+
     static let welcomeText = """
     Willkommen beim Pad Commander!
 
@@ -24,8 +30,10 @@ enum DemoData {
 
     Mit „+“ in der Laufwerksleiste holst du Ordner aus der Dateien-App
     dazu: iCloud Drive, USB-Sticks, Netzlaufwerke oder andere Apps.
-    Dieser Ordner hier („iPad“) ist in der Dateien-App unter
-    „Auf meinem iPad › Pad Commander“ zu finden.
+    \(homeLine)
+
+    Mit Tastatur: F1 … F10 oder ⌘1 … ⌘0 (für Tastaturen ohne F-Tasten).
+    Alle Tasten und Gesten zeigt die Hilfe (F1 bzw. ⌘1).
     """
 
     private static var root: URL { LocationAccess.documents }

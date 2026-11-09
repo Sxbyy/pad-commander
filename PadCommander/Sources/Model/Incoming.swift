@@ -38,6 +38,7 @@ extension AppModel {
         panel.cursor = item.url
         let sources = panel.selection.map { $0.url }
         dragSources = sources
+        dragNames = Set([item.name] + sources.map { $0.lastPathComponent })
         dragSide = panel.side
         dragTime = Date()
         if item.isDirectory {
@@ -53,11 +54,15 @@ extension AppModel {
 
     /// Ablegen in einem Fenster.
     func handleDrop(_ providers: [NSItemProvider], on panel: PanelModel) -> Bool {
-        let internalDrag = !dragSources.isEmpty && Date().timeIntervalSince(dragTime) < 120
+        // Eigener Ziehvorgang? Ein abgebrochener alter darf eine Datei aus einer anderen App nicht kapern.
+        let names = dragNames
+        let foreign = providers.contains { p in p.suggestedName.map { !names.contains($0) } ?? false }
+        let internalDrag = !dragSources.isEmpty && Date().timeIntervalSince(dragTime) < 120 && !foreign
+        let sources = dragSources
+        dragSources = []
+        dragNames = []
         if internalDrag {
-            let sources = dragSources
             let from = dragSide
-            dragSources = []
             guard from != panel.side else { return false }
             activate(from)
             prepareTransfer(.copy, sources: sources, targetSide: panel.side)
